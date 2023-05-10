@@ -1,0 +1,12 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "dev",
+      "group": "dev",
+      "database": "${workspaceFolder:nest-template}/prisma/dev.db"
+    }
+  ],
+  "sqltools.useNodeRuntime": true
+}

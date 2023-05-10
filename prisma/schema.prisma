@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// USER
+model User {
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  name             String?
+  createdAt        DateTime       @default(now())
+  password         String
+  isEmailConfirmed Boolean        @default(false)
+  refreshToken     String?
+  roles            Role[]
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  users       User[]
+  permissions Permission[]
+}
+
+// filled by seeders
+model Permission {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  roles Role[]
+}
+
+model UserSettings {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  name   String
+  value  String
+
+  @@unique([userId, name])
+}
