@@ -13,6 +13,7 @@ export class UserEntity implements User {
     isArray: true,
   })
   roles: Role[];
+  phone: string;
 
   @ApiHideProperty()
   password: string;

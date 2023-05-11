@@ -1,21 +1,26 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsMobilePhone, IsNotEmpty, IsPhoneNumber } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @IsNotEmpty()
   name: string;
 
-  @IsEmail()
-  email: string;
+  @IsPhoneNumber()
+  @IsMobilePhone('ru-RU')
+  phone: string;
 
   @IsNotEmpty()
   password: string;
 }
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+export class CreatePhoneConfirmationDto {
+  code: string;
+  userId: number;
+}
 
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
 export class AttachRoleDto {
   @IsNotEmpty()
-  roles: number[]
+  roles: number[];
 }

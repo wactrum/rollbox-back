@@ -12,14 +12,35 @@ generator client {
 
 // USER
 model User {
-  id               Int            @id @default(autoincrement())
-  email            String         @unique
-  name             String?
-  createdAt        DateTime       @default(now())
-  password         String
-  isEmailConfirmed Boolean        @default(false)
-  refreshToken     String?
-  roles            Role[]
+  id                Int                @id @default(autoincrement())
+  email             String?            @unique
+  phone             String             @unique
+  name              String?
+  createdAt         DateTime           @default(now())
+  password          String
+  isEmailConfirmed  Boolean            @default(false)
+  refreshToken      String?
+  roles             Role[]
+  refreshTokens     RefreshToken[]
+  phoneConfirmation PhoneConfirmation?
+}
+
+model PhoneConfirmation {
+  id        Int      @id @default(autoincrement())
+  code      String
+  isUsed    Boolean  @default(false)
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String
+  userAgent String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Role {

@@ -10,6 +10,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ConfirmationService } from '@/auth/confirmation.service';
 import { ConfirmationController } from '@/auth/confirmation.controller';
 import { JwtAuthSocketGuard } from '@/auth/guards/jwt-auth.socket.guard';
+import { SmsModule } from '@/sms/sms.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { JwtAuthSocketGuard } from '@/auth/guards/jwt-auth.socket.guard';
       },
     }),
     MailModule,
+    SmsModule,
   ],
   providers: [
     AuthService,

@@ -7,8 +7,8 @@ import {
   LoginResponseDto,
   RefreshTokenDto,
   RegisterDto,
-  ResetPasswordDto
-} from "@/auth/dto/auth.dto";
+  ResetPasswordDto,
+} from '@/auth/dto/auth.dto';
 import { AuthService } from '@/auth/auth.service';
 
 @Controller()

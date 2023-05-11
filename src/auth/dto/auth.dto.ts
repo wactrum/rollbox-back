@@ -1,10 +1,10 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsMobilePhone } from 'class-validator';
 import { UserEntity } from '@/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthDto {
-  @IsEmail()
-  email: string;
+  @IsMobilePhone('ru-RU')
+  phone: string;
 
   @IsNotEmpty()
   password: string;
@@ -20,8 +20,8 @@ export class LoginResponseDto {
 }
 
 export class RegisterDto {
-  @IsEmail()
-  email: string;
+  @IsMobilePhone('ru-RU')
+  phone: string;
   @IsNotEmpty()
   name: string;
   @IsNotEmpty()

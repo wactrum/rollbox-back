@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from '@/mail/mail.service';
 import { UsersService } from '@/users/users.service';
+import { SmsService } from '@/sms/sms.service';
 
 @Injectable()
 export class ConfirmationService {
@@ -10,8 +11,17 @@ export class ConfirmationService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly emailService: MailService,
+    private readonly smsService: SmsService,
     private readonly usersService: UsersService
   ) {}
+
+  async sendVerificationSms(phone: string, code: string) {
+    const text = `Для подтверждения входа в Rollbox пожалуйста введте код: ${code}`;
+    return this.smsService.send({
+      phone,
+      message: text,
+    });
+  }
 
   async sendVerificationLink(email: string, name: string) {
     const payload = { email };

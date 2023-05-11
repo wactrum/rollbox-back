@@ -14,7 +14,7 @@ export class AuthService {
     private emailService: MailService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private emailConfirmationService: ConfirmationService
+    private confirmationService: ConfirmationService
   ) {}
 
   async login(user: any) {
@@ -29,9 +29,21 @@ export class AuthService {
     };
   }
 
+  generateRandomCode() {
+    return Math.random().toString().slice(2, 6);
+  }
+
   async register(registerDto: RegisterDto) {
     const user = await this.usersService.create(registerDto);
-    await this.emailConfirmationService.sendVerificationLink(user.email, user.name);
+
+    const code = this.generateRandomCode();
+    await Promise.all([
+      this.usersService.createPhoneConfirmation({
+        code,
+        userId: user.id,
+      }),
+      this.confirmationService.sendVerificationSms(user.phone, code),
+    ]);
     return;
   }
 

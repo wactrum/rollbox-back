@@ -10,9 +10,9 @@ import * as argon2 from 'argon2';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let mockUserService = mockDeep<UsersService>();
-  let mockMailService = mockDeep<MailService>();
-  let mockConfirmationService = mockDeep<ConfirmationService>();
+  const mockUserService = mockDeep<UsersService>();
+  const mockMailService = mockDeep<MailService>();
+  const mockConfirmationService = mockDeep<ConfirmationService>();
 
   // @ts-ignore
   mockUserService.findByEmail.mockImplementation(async (email) => ({

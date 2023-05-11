@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { AttachRoleDto, CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import {
+  AttachRoleDto,
+  CreatePhoneConfirmationDto,
+  CreateUserDto,
+  UpdateUserDto,
+} from './dto/user.dto';
 import { PrismaService } from 'nestjs-prisma';
 import * as argon2 from 'argon2';
 
 export const select = {
   id: true,
+  phone: true,
   email: true,
   name: true,
   createdAt: true,
@@ -15,10 +21,18 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
+    createUserDto.phone = createUserDto.phone.replace('+', '');
+
     createUserDto.password = await argon2.hash(createUserDto.password);
     return this.prisma.user.create({
       data: createUserDto,
       select,
+    });
+  }
+
+  async createPhoneConfirmation(createPhoneConformationDto: CreatePhoneConfirmationDto) {
+    return this.prisma.phoneConfirmation.create({
+      data: createPhoneConformationDto,
     });
   }
 

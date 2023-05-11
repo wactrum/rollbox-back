@@ -8,6 +8,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MailModule } from '@/mail/mail.module';
 import { RolesModule } from './roles/roles.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -22,11 +23,13 @@ import { ScheduleModule } from '@nestjs/schedule';
 
     // Utils
     MailModule,
+    SmsModule,
 
     // Business
     UsersModule,
     AuthModule,
     RolesModule,
+    SmsModule,
   ],
 })
 export class AppModule {}
