@@ -1,11 +1,10 @@
-import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Permission } from '@/auth/permission.service';
 import { PERMISSIONS_KEY } from '@/auth/decorators/rbac.decorator';
 import { UsersService } from '@/users/users.service';
-import { Cache } from 'cache-manager';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { cacheWrapper } from '@/utils/cache';
+import { CacheService } from '@/cache/cache.service';
+import { CacheTypes } from '@/cache/cache.dto';
 
 @Injectable()
 /**
@@ -16,7 +15,7 @@ export class RbacGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private userService: UsersService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    private cacheService: CacheService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -31,6 +30,7 @@ export class RbacGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
     const userPermissions = await this.getUserPermissions(user.id);
+    console.warn(userPermissions);
     return requiredPermissions.some((permission) => userPermissions.includes(permission));
   }
 
@@ -38,7 +38,7 @@ export class RbacGuard implements CanActivate {
    * Use the cache so as not to go to the database with each request
    */
   async getUserPermissions(userId: number): Promise<string[]> {
-    return cacheWrapper(this.cacheManager, 'permissions', userId, () =>
+    return this.cacheService.getOrCache(CacheTypes.PERMISSIONS, userId, () =>
       this.userService.getAllPermissions(userId)
     );
   }

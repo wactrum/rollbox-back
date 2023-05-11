@@ -19,7 +19,7 @@ export class AuthService {
   ) {}
 
   async login(user: any, userAgent?: string) {
-    const { accessToken, refreshToken } = await this.getTokens(user.id, user.email);
+    const { accessToken, refreshToken } = await this.getTokens(user.id, user.phone);
 
     await this.updateRefreshTokens(user.id, refreshToken, userAgent);
 
@@ -55,33 +55,35 @@ export class AuthService {
 
   async refreshTokens(refreshToken: string, userAgent?: string) {
     const decode = this.jwtService.decode(refreshToken);
-    const sub = decode?.sub;
-    if (!sub) throw new ForbiddenException('Access Denied');
+    const userId = decode?.sub;
+    if (!userId) throw new ForbiddenException('Access Denied');
 
-    const user = await this.usersService.findWithRefresh(sub);
+    const user = await this.usersService.findWithRefresh(userId);
     const userTokens = user.refreshTokens;
     const isExists = !!userTokens.length;
 
     if (!isExists) throw new ForbiddenException('Access Denied');
+
     const verifyPromises = userTokens.map((item) => argon2.verify(item.token, refreshToken));
     const verifyResults = await Promise.all(verifyPromises);
     const refreshTokenMatches = verifyResults.some((result) => result === true);
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
+
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRefreshTokens(user.id, tokens.refreshToken, userAgent);
     return tokens;
   }
 
-  async getTokens(userId: number, email: string) {
-    const payload = { email: email, sub: userId };
+  async getTokens(userId: number, phone: string) {
+    const payload = { id: userId, phone };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        expiresIn: '5s',
+        expiresIn: '24h',
         secret: this.configService.get('JWT_TOKEN_SECRET'),
       }),
       this.jwtService.signAsync(payload, {
-        expiresIn: '30s',
+        expiresIn: '30d',
         secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
       }),
     ]);

@@ -1,6 +1,6 @@
 import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
 import { LocalAuthGuard } from '@/auth/guards/local-auth.guard';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import {
   AuthDto,
   CodeResponseDto,
@@ -17,7 +17,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   /**
-   * Авторизация в системе
+   * Authorization in the system
    */
   @UseGuards(LocalAuthGuard)
   @ApiCreatedResponse({ type: LoginResponseDto })
@@ -28,7 +28,7 @@ export class AuthController {
   }
 
   /**
-   * Обновление токена
+   * Token refresh
    */
   @ApiCreatedResponse({ type: LoginResponseDto })
   @Post('refresh-token')
@@ -37,7 +37,7 @@ export class AuthController {
   }
 
   /**
-   * Регистрация
+   * Registration
    */
   @ApiCreatedResponse({ type: CodeResponseDto })
   @Post('register')

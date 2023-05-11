@@ -13,6 +13,9 @@ export class PhoneConfirmationController {
     private readonly authService: AuthService
   ) {}
 
+  /**
+   * Confirm phone and end registration
+   */
   @ApiOkResponse({ status: 200 })
   @Post('confirm')
   async register(@Request() req, @Body() body: ConfirmDto) {
@@ -21,7 +24,7 @@ export class PhoneConfirmationController {
   }
 
   /**
-   * Повторно отправить код-подтверждение
+   * Resend verification phone code
    */
   @Post('resend-confirmation')
   @ApiCreatedResponse({ status: 201, type: CodeResponseDto })

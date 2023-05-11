@@ -1,19 +1,14 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 
-@Injectable()
 /**
- * Guard for check user confirm email
+ * Guard for check user confirm phone
  */
-export class ConfirmationGuard implements CanActivate {
+@Injectable()
+export class PhoneConfirmationGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
 
-    if (!request.user?.isEmailConfirmed) {
+    if (!request.user?.isPhoneConfirmed) {
       throw new UnauthorizedException('Confirm your email first');
     }
 

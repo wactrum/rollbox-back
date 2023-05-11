@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { findUniqueWithException } from '@/utils/prisma';
+import { CacheService } from '@/cache/cache.service';
+import { CacheTypes } from '@/cache/cache.dto';
 
 @Injectable()
 export class RolesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private cacheService: CacheService) {}
 
   create(createRoleDto: CreateRoleDto) {
     return this.prisma.role.create({
@@ -43,20 +45,25 @@ export class RolesService {
     });
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return this.prisma.role.update({
+  async update(id: number, updateRoleDto: UpdateRoleDto) {
+    const updateRolePromise = this.prisma.role.update({
       where: {
         id,
       },
       data: {
         name: updateRoleDto.name,
         permissions: {
-          connect: updateRoleDto?.permissions.map((el) => ({
+          set: updateRoleDto.permissions.map((el) => ({
             id: el,
           })),
         },
       },
     });
+
+    const resetRolesCachePromise = this.cacheService.resetCacheWithoutKey(CacheTypes.PERMISSIONS);
+
+    const [roles] = await Promise.all([updateRolePromise, resetRolesCachePromise]);
+    return roles;
   }
 
   remove(id: number) {

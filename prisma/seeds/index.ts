@@ -1,13 +1,13 @@
-import { PrismaClient } from "@prisma/client";
-import { seedPermission } from "./permissions";
-import { seedRoles } from "./roles";
+import { PrismaClient } from '@prisma/client';
+import { seedPermission } from './permissions';
+import { seedRoles } from './roles';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log(`🌱 Start inserting data`);
-  await seedPermission(prisma)
-  await seedRoles(prisma)
+  await seedPermission(prisma);
+  await seedRoles(prisma);
   console.log(`✅ Seed data inserted ✅`);
 }
 

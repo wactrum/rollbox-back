@@ -9,7 +9,8 @@ import {
 import { PrismaService } from 'nestjs-prisma';
 import * as argon2 from 'argon2';
 import { PhoneConfirmationType } from '@prisma/client';
-import { use } from 'passport';
+import { CacheService } from '@/cache/cache.service';
+import { CacheTypes } from '@/cache/cache.dto';
 
 export const select = {
   id: true,
@@ -21,7 +22,7 @@ export const select = {
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private cacheService: CacheService) {}
 
   async create(createUserDto: CreateUserDto) {
     createUserDto.phone = createUserDto.phone.replace('+', '');
@@ -77,7 +78,7 @@ export class UsersService {
   findOne(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
-      select: { ...select, isEmailConfirmed: true },
+      select: { ...select, isEmailConfirmed: true, roles: { include: { permissions: true } } },
     });
   }
 
@@ -242,15 +243,20 @@ export class UsersService {
     return this.prisma.user.delete({ where: { id } });
   }
 
-  setRoles(id: number, attachRoleDto: AttachRoleDto) {
-    return this.prisma.user.update({
+  async setRoles(id: number, attachRoleDto: AttachRoleDto) {
+    const updatePromise = this.prisma.user.update({
       where: { id },
       data: {
         roles: attachRoleDto.roles.length
-          ? { connect: attachRoleDto.roles.map((el) => ({ id: el })) }
+          ? { set: attachRoleDto.roles.map((el) => ({ id: el })) }
           : { set: [] },
       },
       select,
     });
+
+    const clearCachePromise = this.cacheService.resetCache(CacheTypes.PERMISSIONS, id);
+
+    const [user] = await Promise.all([updatePromise, clearCachePromise]);
+    return user;
   }
 }

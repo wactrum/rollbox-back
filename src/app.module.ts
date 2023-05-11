@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CacheModule } from '@nestjs/cache-manager';
 import { UsersModule } from '@/users/users.module';
 import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from '@/auth/auth.module';
@@ -11,6 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SmsModule } from './sms/sms.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -22,15 +22,13 @@ import { APP_GUARD } from '@nestjs/core';
     // Utils
     MailModule,
     SmsModule,
+    CacheModule,
 
     // Libs
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot(),
     PrismaModule.forRoot(),
     ScheduleModule.forRoot(),
-    CacheModule.register({
-      isGlobal: true,
-    }),
     ThrottlerModule.forRoot({
       ttl: 1,
       limit: 10,

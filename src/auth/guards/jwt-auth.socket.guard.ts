@@ -6,10 +6,7 @@ import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class JwtAuthSocketGuard implements CanActivate {
-  constructor(
-    private configService: ConfigService,
-    private jwtService: JwtService
-  ) {}
+  constructor(private configService: ConfigService, private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const client: Socket = context.switchToWs().getClient();
@@ -24,12 +21,12 @@ export class JwtAuthSocketGuard implements CanActivate {
         secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
       });
       if (decoded) {
-        client['userId'] = decoded.sub;
+        client['userId'] = decoded.id;
         client['email'] = decoded.email;
         return true;
       }
     } catch (err) {
-      throw new WsException("jwt auth error")
+      throw new WsException('jwt auth error');
     }
 
     return false;

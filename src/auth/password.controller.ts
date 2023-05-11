@@ -19,7 +19,7 @@ export class PasswordController {
   constructor(private readonly passwordService: PasswordService) {}
 
   /**
-   * Отправить код-подтверждение для сброса пароля
+   * Submit password reset verification code
    */
   @Post('reset/send')
   @ApiCreatedResponse({ type: CodeResponseDto })
@@ -30,7 +30,7 @@ export class PasswordController {
   }
 
   /**
-   * Повторно отправить код-подтверждение
+   * Resend verification code
    */
   @Post('reset/resend')
   @ApiCreatedResponse({ type: CodeResponseDto })
@@ -39,8 +39,7 @@ export class PasswordController {
   }
 
   /**
-   * Подтвердить смену пароля
-   * @param body
+   * Confirm password change
    */
   @ApiCreatedResponse()
   @Post('reset/confirm')
