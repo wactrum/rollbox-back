@@ -9,3 +9,13 @@ export async function findUniqueWithException(model, options) {
 
   return result;
 }
+
+export async function findWithException(model, options) {
+  const result = await model.find(options);
+
+  if (!result) {
+    throw new NotFoundException(`Record not found`);
+  }
+
+  return result;
+}

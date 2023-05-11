@@ -28,18 +28,21 @@ export class RegisterDto {
   password: string;
 }
 
+export class ResendRegisterSms {
+  @IsMobilePhone('ru-RU')
+  phone: string;
+}
+
+export class CodeResponseDto {
+  @ApiProperty({
+    description: 'If enable debug on sms sending',
+  })
+  code?: string;
+}
+
 export class ResetPasswordDto {
   @IsEmail()
   email: string;
-}
-
-export class ConfirmResetPasswordDto {
-  @IsEmail()
-  email: string;
-  @IsNotEmpty()
-  token: string;
-  @IsNotEmpty()
-  password: string;
 }
 
 export class RefreshTokenDto {

@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -12,26 +12,36 @@ generator client {
 
 // USER
 model User {
-  id                Int                @id @default(autoincrement())
-  email             String?            @unique
-  phone             String             @unique
+  id                Int                 @id @default(autoincrement())
+  email             String?             @unique
+  phone             String              @unique
   name              String?
-  createdAt         DateTime           @default(now())
+  createdAt         DateTime            @default(now())
   password          String
-  isEmailConfirmed  Boolean            @default(false)
-  refreshToken      String?
-  roles             Role[]
+  isEmailConfirmed  Boolean             @default(false)
+  isPhoneConfirmed  Boolean             @default(false)
   refreshTokens     RefreshToken[]
-  phoneConfirmation PhoneConfirmation?
+  roles             Role[]
+  phoneConfirmation PhoneConfirmation[]
+  cart              Cart?
+  orders            Order[]
 }
 
 model PhoneConfirmation {
-  id        Int      @id @default(autoincrement())
+  id        Int                   @id @default(autoincrement())
   code      String
-  isUsed    Boolean  @default(false)
-  userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  isUsed    Boolean               @default(false)
+  userId    Int
+  user      User                  @relation(fields: [userId], references: [id])
+  createdAt DateTime              @default(now())
+  type      PhoneConfirmationType
+
+  @@unique([userId, type])
+}
+
+enum PhoneConfirmationType {
+  REGISTER
+  PASSWORD_RESET
 }
 
 model RefreshToken {
@@ -64,4 +74,89 @@ model UserSettings {
   value  String
 
   @@unique([userId, name])
+}
+
+// Products
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+}
+
+model Product {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique()
+  description      String
+  price            Float
+  category         Category           @relation(fields: [categoryId], references: [id])
+  categoryId       Int
+  discount         Float
+  productsOnCart   ProductsOnCart[]
+  productsOnOrders ProductsOnOrders[]
+  isDeleted        Boolean
+}
+
+model Cart {
+  id       Int              @id @default(autoincrement())
+  user     User             @relation(fields: [userId], references: [id])
+  userId   Int              @unique
+  products ProductsOnCart[]
+}
+
+model ProductsOnCart {
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  cartId    Int
+  product   Product  @relation(fields: [productId], references: [id])
+  addetAt   DateTime @default(now())
+  productId Int
+  amount    Int
+
+  @@id([cartId, productId])
+}
+
+// Order
+model Order {
+  id          Int                @id @default(autoincrement())
+  user        User               @relation(fields: [userId], references: [id])
+  userId      Int
+  status      OrderStatuses
+  products    ProductsOnOrders[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime?
+  location    String?
+  paymentType PaymentTypes?
+  price       Float
+  type        OrderType
+  // deliverTo   DateTime
+}
+
+enum OrderType {
+  PICKUP
+  DELIVERY
+}
+
+enum PaymentTypes {
+  UPON_RECEIPT_IN_CASH
+  UPON_RECEIPT_BY_CARD
+}
+
+enum OrderStatuses {
+  CREATED
+  IN_PROGRESS
+  DELIVERED
+  CANCELED
+  COMPLETED
+}
+
+model ProductsOnOrders {
+  id        Int     @id @default(autoincrement())
+  product   Product @relation(fields: [productId], references: [id])
+  price     Float
+  discount  Float
+  productId Int
+  amount    Int
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+
+  @@unique([orderId, productId])
 }

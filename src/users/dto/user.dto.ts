@@ -1,5 +1,6 @@
 import { IsMobilePhone, IsNotEmpty, IsPhoneNumber } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
+import { PhoneConfirmationType } from '@prisma/client';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -16,6 +17,13 @@ export class CreateUserDto {
 export class CreatePhoneConfirmationDto {
   code: string;
   userId: number;
+  type: PhoneConfirmationType;
+}
+
+export class CreateRefreshTokenDto {
+  userAgent?: string;
+  userId: number;
+  token: string;
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}

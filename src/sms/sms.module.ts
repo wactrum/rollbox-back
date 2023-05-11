@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SmsProvider } from '@/sms/providers/sms.provider.interface';
-import { SmscService } from '@/sms/providers/redsms/smsc.service';
+import { GreensmsService } from '@/sms/providers/greensms/greensms.service';
 import { SmsService } from '@/sms/sms.service';
 import { ConfigModule } from '@nestjs/config';
 
@@ -10,7 +10,7 @@ import { ConfigModule } from '@nestjs/config';
     SmsService,
     {
       provide: SmsProvider,
-      useClass: SmscService,
+      useClass: GreensmsService,
     },
   ],
   exports: [SmsService],

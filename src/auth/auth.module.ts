@@ -7,10 +7,12 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
 import { MailModule } from '@/mail/mail.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ConfirmationService } from '@/auth/confirmation.service';
-import { ConfirmationController } from '@/auth/confirmation.controller';
+import { PhoneConfirmationService } from '@/auth/phone.confirmation.service';
+import { PhoneConfirmationController } from '@/auth/phone.confirmation.controller';
 import { JwtAuthSocketGuard } from '@/auth/guards/jwt-auth.socket.guard';
 import { SmsModule } from '@/sms/sms.module';
+import { PasswordService } from '@/auth/password.service';
+import { PasswordController } from '@/auth/password.controller';
 
 @Module({
   imports: [
@@ -30,13 +32,14 @@ import { SmsModule } from '@/sms/sms.module';
   ],
   providers: [
     AuthService,
-    ConfirmationService,
+    PhoneConfirmationService,
+    PasswordService,
     LocalStrategy,
     JwtService,
     JwtStrategy,
     JwtAuthSocketGuard,
   ],
-  controllers: [AuthController, ConfirmationController],
+  controllers: [AuthController, PasswordController, PhoneConfirmationController],
   exports: [JwtAuthSocketGuard, JwtService],
 })
 export class AuthModule {}

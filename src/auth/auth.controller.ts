@@ -3,13 +3,13 @@ import { LocalAuthGuard } from '@/auth/guards/local-auth.guard';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   AuthDto,
-  ConfirmResetPasswordDto,
+  CodeResponseDto,
   LoginResponseDto,
   RefreshTokenDto,
   RegisterDto,
-  ResetPasswordDto,
 } from '@/auth/dto/auth.dto';
 import { AuthService } from '@/auth/auth.service';
+import { ApiDefaultBadRequestResponse } from '@/utils/decorators/api';
 
 @Controller()
 @ApiTags('auth')
@@ -20,45 +20,28 @@ export class AuthController {
    * Авторизация в системе
    */
   @UseGuards(LocalAuthGuard)
-  @ApiOkResponse({ type: LoginResponseDto })
+  @ApiCreatedResponse({ type: LoginResponseDto })
+  @ApiDefaultBadRequestResponse()
   @Post('login')
   async login(@Request() req, @Body() body: AuthDto) {
-    return this.authService.login(req.user);
+    return this.authService.login(req.user, req.headers['user-agent']);
   }
 
   /**
    * Обновление токена
    */
-  @ApiOkResponse({ type: LoginResponseDto })
+  @ApiCreatedResponse({ type: LoginResponseDto })
   @Post('refresh-token')
   async refreshToken(@Request() req, @Body() body: RefreshTokenDto) {
-    return this.authService.refreshTokens(body.token);
+    return this.authService.refreshTokens(body.token, req.headers['user-agent']);
   }
 
   /**
    * Регистрация
    */
-  @ApiCreatedResponse({ status: 201 })
+  @ApiCreatedResponse({ type: CodeResponseDto })
   @Post('register')
   async register(@Body() body: RegisterDto) {
     return this.authService.register(body);
-  }
-
-  /**
-   * Выслать письмо для сброса пароля
-   */
-  @ApiOkResponse({ status: 200 })
-  @Post('send-reset-password')
-  async sendResetPassword(@Body() body: ResetPasswordDto) {
-    return this.authService.sendResetPasswordLink(body);
-  }
-
-  /**
-   * Подтвердить сброс пароля
-   */
-  @ApiOkResponse({ status: 200 })
-  @Post('confirm-reset-password')
-  async confirmResetPassword(@Body() body: ConfirmResetPasswordDto) {
-    return this.authService.confirmResetPassword(body);
   }
 }

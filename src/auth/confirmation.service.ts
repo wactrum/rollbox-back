@@ -1,70 +1,70 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MailService } from '@/mail/mail.service';
 import { UsersService } from '@/users/users.service';
 import { SmsService } from '@/sms/sms.service';
+import { PhoneConfirmationType } from '@prisma/client';
 
-@Injectable()
-export class ConfirmationService {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-    private readonly emailService: MailService,
-    private readonly smsService: SmsService,
-    private readonly usersService: UsersService
+export abstract class ConfirmationService {
+  abstract type: PhoneConfirmationType;
+  protected resendTime = 2;
+
+  protected constructor(
+    protected readonly configService: ConfigService,
+    protected readonly smsService: SmsService,
+    protected readonly usersService: UsersService
   ) {}
 
-  async sendVerificationSms(phone: string, code: string) {
-    const text = `Для подтверждения входа в Rollbox пожалуйста введте код: ${code}`;
+  protected generateRandomCode() {
+    return Math.random().toString().slice(2, 6);
+  }
+
+  abstract getText(code): string;
+
+  protected async sendSms(phone: string, code: string) {
     return this.smsService.send({
       phone,
-      message: text,
+      message: this.getText(code),
     });
   }
 
-  async sendVerificationLink(email: string, name: string) {
-    const payload = { email };
-    const token = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_EMAIL_VERIFICATION_TOKEN_SECRET'),
-      expiresIn: this.configService.get('JWT_EMAIL_VERIFICATION_TOKEN_EXPIRATION_TIME'),
-    });
-    const url = `${this.configService.get('EMAIL_CONFIRMATION_URL')}?token=${token}`;
+  async sendConfirmationCode(userId: number, phone: string) {
+    const code = this.generateRandomCode();
 
-    this.emailService.sendUserConfirmation(email, name, url);
-  }
+    await Promise.all([
+      this.usersService.createOrUpdatePhoneConfirmation({
+        code,
+        userId,
+        type: this.type,
+      }),
+      this.sendSms(phone, code),
+    ]);
 
-  public async confirmEmail(email: string) {
-    const user = await this.usersService.findByEmail(email);
-    if (user.isEmailConfirmed) {
-      throw new BadRequestException('Email already confirmed');
-    }
-    await this.usersService.markEmailAsConfirmed(email);
-  }
-
-  public async decodeConfirmationToken(token: string) {
-    try {
-      const payload = await this.jwtService.verify(token, {
-        secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
-      });
-
-      if (typeof payload === 'object' && 'email' in payload) {
-        return payload.email;
-      }
-      throw new BadRequestException();
-    } catch (error) {
-      if (error?.name === 'TokenExpiredError') {
-        throw new BadRequestException('Email confirmation token expired');
-      }
-      throw new BadRequestException('Bad confirmation token');
+    if (this.configService.get('SMS_DEBUG')) {
+      return {
+        code,
+      };
     }
   }
 
-  public async resendConfirmationLink(userId: number) {
-    const user = await this.usersService.findOne(userId);
-    if (user.isEmailConfirmed) {
-      throw new BadRequestException('Email already confirmed');
+  protected isValidResendTime(oldTime: Date) {
+    const currentDate = new Date();
+    oldTime.setMinutes(oldTime.getMinutes() + this.resendTime);
+
+    return currentDate >= oldTime;
+  }
+
+  async resendConfirmationCode(phone: string) {
+    phone = phone.replace('+', '');
+    const phoneConfirmation = await this.usersService.findPhoneConfirmation(phone, this.type);
+
+    if (!phoneConfirmation) {
+      throw new BadRequestException('No resend codes found');
     }
-    await this.sendVerificationLink(user.email, user.name);
+
+    if (this.isValidResendTime(phoneConfirmation.createdAt)) {
+      return this.sendConfirmationCode(phoneConfirmation.userId, phoneConfirmation.code);
+    } else {
+      throw new BadRequestException(`It's been less than ${this.resendTime} minutes`);
+    }
   }
 }

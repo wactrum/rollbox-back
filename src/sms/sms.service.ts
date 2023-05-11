@@ -11,7 +11,7 @@ export class SmsService {
   async send(data: SendSmsDto) {
     try {
       await validateOrReject(data);
-      await this.smsProvider.send(data);
+      //await this.smsProvider.send(data);
     } catch (e) {
       this.logger.error('Send sms error:', e.message);
       throw e;

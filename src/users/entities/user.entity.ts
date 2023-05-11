@@ -23,4 +23,7 @@ export class UserEntity implements User {
 
   @ApiHideProperty()
   isEmailConfirmed: boolean;
+
+  @ApiHideProperty()
+  isPhoneConfirmed: boolean;
 }

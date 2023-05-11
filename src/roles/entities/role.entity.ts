@@ -1,5 +1,5 @@
-import { Role as PrismaRole, Permission } from "@prisma/client";
-import { ApiProperty } from "@nestjs/swagger";
+import { Role as PrismaRole, Permission } from '@prisma/client';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PermissionEntity implements Permission {
   id: number;
@@ -14,6 +14,5 @@ export class RoleEntity implements PrismaRole {
     type: PermissionEntity,
     isArray: true,
   })
-  permissions?: Permission[]
+  permissions?: Permission[];
 }
-
