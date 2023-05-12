@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Permission } from "@/auth/permission.service";
+import { Permission } from "@/business/auth/permission.service";
 
 const permissions = Object.values(Permission)
 

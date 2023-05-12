@@ -17,6 +17,7 @@ export async function prepareServer(app: INestApplication): Promise<INestApplica
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      transform: true,
     })
   );
 
