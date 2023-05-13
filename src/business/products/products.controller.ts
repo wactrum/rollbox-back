@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -8,15 +18,17 @@ import { RbacGuard } from '@/business/auth/guards/rbac.guard';
 import { Permissions } from '@/business/auth/decorators/rbac.decorator';
 import { Permission } from '@/business/auth/permission.service';
 import { ProductEntity } from '@/business/products/entities/product.entity';
+import { GetProductsDto } from '@/business/products/dto/get-products.dto';
+import { ApiPaginatedResponse } from '@/infrastructure/database/prisma/decorators/pagination.decorator';
 
 @ApiTags('products')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RbacGuard)
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RbacGuard)
   @Permissions(Permission.CREATE_PRODUCTS)
   @ApiCreatedResponse({ type: ProductEntity })
   create(@Body() createProductDto: CreateProductDto) {
@@ -24,9 +36,9 @@ export class ProductsController {
   }
 
   @Get()
-  @ApiOkResponse({ type: ProductEntity, isArray: true })
-  findAll() {
-    return this.productsService.findAll();
+  @ApiPaginatedResponse(ProductEntity)
+  findAll(@Query() query: GetProductsDto) {
+    return this.productsService.findAllWithPagination(query);
   }
 
   @Get(':id')
@@ -36,6 +48,8 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RbacGuard)
   @Permissions(Permission.UPDATE_PRODUCT)
   @ApiOkResponse({ type: ProductEntity })
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
@@ -43,6 +57,8 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RbacGuard)
   @Permissions(Permission.DELETE_PRODUCT)
   remove(@Param('id') id: string) {
     return this.productsService.remove(+id);

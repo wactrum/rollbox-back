@@ -2,8 +2,8 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
 import { ConfirmResetPasswordDto } from '@/business/auth/dto/confirm.dto';
 import { CodeResponseDto, ResendRegisterSms } from '@/business/auth/dto/auth.dto';
-import { PasswordService } from '@/business/auth/password/password.service';
-import { ApiDefaultBadRequestResponse } from '@/utils/decorators/api';
+import { PasswordService } from '@/business/auth/password.service';
+import { ApiDefaultBadRequestResponse } from 'src/utils/swagger';
 
 @Controller('password')
 @ApiTags('auth')

@@ -5,7 +5,6 @@ import { PrismaModule } from 'nestjs-prisma';
 
 @Module({
   controllers: [RolesController],
-  imports: [PrismaModule],
   providers: [RolesService],
   exports: [RolesService],
 })

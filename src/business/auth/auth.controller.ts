@@ -9,7 +9,7 @@ import {
   RegisterDto,
 } from '@/business/auth/dto/auth.dto';
 import { AuthService } from '@/business/auth/auth.service';
-import { ApiDefaultBadRequestResponse } from '@/utils/decorators/api';
+import { ApiDefaultBadRequestResponse } from 'src/utils/swagger';
 
 @Controller()
 @ApiTags('auth')

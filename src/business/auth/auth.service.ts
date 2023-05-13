@@ -1,12 +1,18 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '@/business/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { RegisterDto } from '@/business/auth/dto/auth.dto';
 import { MailService } from '@/infrastructure/mail/mail.service';
 import { ConfigService } from '@nestjs/config';
-import { PhoneConfirmationService } from '@/business/auth/confirmation/phone.confirmation.service';
+import { PhoneConfirmationService } from '@/business/auth/phone.confirmation.service';
 import { UAParser } from 'ua-parser-js';
+import { UserEntity } from '@/business/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -18,8 +24,27 @@ export class AuthService {
     private confirmationService: PhoneConfirmationService
   ) {}
 
+  /**
+   * Проверка доступа по логину/паролю
+   * Идет через strategies local.strategy
+   */
+  async validateUser(phone: string, password: string): Promise<any> {
+    const user = await this.usersService.findConfirmedByPhone(phone);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const match = await argon2.verify(user.password, password);
+    if (match) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
+  }
+
   async login(user: any, userAgent?: string) {
-    const { accessToken, refreshToken } = await this.getTokens(user.id, user.phone);
+    const { accessToken, refreshToken } = await this.getTokens(user.id, user.phone, user.cart.id);
 
     await this.updateRefreshTokens(user.id, refreshToken, userAgent);
 
@@ -33,24 +58,6 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const user = await this.usersService.create(registerDto);
     return this.confirmationService.sendConfirmationCode(user.id, user.phone);
-  }
-
-  /**
-   * Проверка доступа по логину/паролю
-   */
-  async validateUser(phone: string, password: string): Promise<any> {
-    const user = await this.usersService.findConfirmedByPhone(phone);
-
-    if (!user) {
-      throw new BadRequestException('Bad data');
-    }
-
-    const match = await argon2.verify(user.password, password);
-    if (match) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
   }
 
   async refreshTokens(refreshToken: string, userAgent?: string) {
@@ -69,13 +76,13 @@ export class AuthService {
     const refreshTokenMatches = verifyResults.some((result) => result === true);
     if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, user.cart.id);
     await this.updateRefreshTokens(user.id, tokens.refreshToken, userAgent);
     return tokens;
   }
 
-  async getTokens(userId: number, phone: string) {
-    const payload = { id: userId, phone };
+  async getTokens(userId: number, phone: string, cartId: number) {
+    const payload = { id: userId, phone, cartId };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {

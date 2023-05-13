@@ -11,6 +11,8 @@ import * as argon2 from 'argon2';
 import { PhoneConfirmationType } from '@prisma/client';
 import { CacheService } from '@/infrastructure/cache/cache.service';
 import { CacheTypes } from '@/infrastructure/cache/cache.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserConfirmedEvent } from '@/business/auth/events/user.confirmed';
 
 export const select = {
   id: true,
@@ -24,7 +26,11 @@ export const select = {
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService, private cacheService: CacheService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cacheService: CacheService,
+    private eventEmitter: EventEmitter2
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     createUserDto.phone = createUserDto.phone.replace('+', '');
@@ -91,6 +97,7 @@ export class UsersService {
         refreshTokens: true,
         email: true,
         id: true,
+        cart: { select: { id: true } },
       },
     });
   }
@@ -141,7 +148,7 @@ export class UsersService {
   findConfirmedByPhone(phone: string) {
     return this.prisma.user.findFirst({
       where: { phone, isPhoneConfirmed: true },
-      include: { roles: { include: { permissions: true } } },
+      include: { roles: { include: { permissions: true } }, cart: true },
     });
   }
 
@@ -166,7 +173,10 @@ export class UsersService {
       data: {
         isPhoneConfirmed: true,
       },
-      select,
+      select: {
+        ...select,
+        cart: { select: { id: true } },
+      },
     });
 
     await this.prisma.phoneConfirmation.update({

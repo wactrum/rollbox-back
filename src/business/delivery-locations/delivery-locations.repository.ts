@@ -3,7 +3,6 @@ import { CreateDeliveryLocationDto } from './dto/create-delivery-location.dto';
 import { UpdateDeliveryLocationDto } from './dto/update-delivery-location.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { DeliveryLocationSearchDto } from '@/business/delivery-locations/dto/get-delivery-location.dto';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class DeliveryLocationsRepository {
@@ -15,12 +14,13 @@ export class DeliveryLocationsRepository {
     });
   }
 
-  findAll() {
-    return this.prismaService.deliveryLocation.findMany();
+  findAll(query: DeliveryLocationSearchDto) {
+    return this.prismaService.deliveryLocation.findMany({
+      where: { isPrivateHouse: query.isPrivateHouse, address: { search: query.search } },
+    });
   }
 
   findByUser(id: number, que: DeliveryLocationSearchDto) {
-    console.warn(que);
     return this.prismaService.deliveryLocation.findMany({
       where: { userId: id, isPrivateHouse: que.isPrivateHouse, address: { search: que.search } },
     });

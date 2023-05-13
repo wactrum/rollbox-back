@@ -4,6 +4,7 @@ import { UsersService } from '@/business/users/users.service';
 import { SmsService } from '@/infrastructure/sms/sms.service';
 import { ConfirmationService } from '@/business/auth/confirmation.service';
 import { PhoneConfirmationType } from '@prisma/client';
+import { CartService } from '@/business/cart/cart.service';
 
 @Injectable()
 export class PhoneConfirmationService extends ConfirmationService {
@@ -15,7 +16,8 @@ export class PhoneConfirmationService extends ConfirmationService {
   constructor(
     protected readonly configService: ConfigService,
     protected readonly smsService: SmsService,
-    protected readonly usersService: UsersService
+    protected readonly usersService: UsersService,
+    protected readonly cartService: CartService
   ) {
     super(configService, smsService, usersService);
   }
@@ -36,6 +38,8 @@ export class PhoneConfirmationService extends ConfirmationService {
     if (phoneConfirmation.isUsed) {
       throw new BadRequestException('Already confirmed');
     }
+
+    await this.cartService.create(phoneConfirmation.userId);
 
     return this.usersService.markPhoneAsConfirmed(phone);
   }

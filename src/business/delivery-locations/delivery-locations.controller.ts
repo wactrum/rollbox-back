@@ -44,7 +44,7 @@ export class DeliveryLocationsController {
   @Permissions(Permission.VIEW_DELIVERY_LOCATIONS)
   @ApiOkResponse({ type: DeliveryLocationEntity, isArray: true })
   findAll(@Query() query: DeliveryLocationSearchDto) {
-    return this.deliveryLocationsService.findAll();
+    return this.deliveryLocationsService.findAll(query);
   }
 
   @Get('my')

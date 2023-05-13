@@ -12,8 +12,8 @@ export class DeliveryLocationsService {
     return this.deliveryLocationsRepository.create(createDeliveryLocationDto);
   }
 
-  findAll() {
-    return this.deliveryLocationsRepository.findAll();
+  findAll(query: DeliveryLocationSearchDto) {
+    return this.deliveryLocationsRepository.findAll(query);
   }
 
   checkIsAuthor(userId: number, id: number) {

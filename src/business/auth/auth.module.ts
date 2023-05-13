@@ -7,12 +7,13 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from '@/business/auth/strategies/jwt.strategy';
 import { MailModule } from '@/infrastructure/mail/mail.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PhoneConfirmationService } from '@/business/auth/confirmation/phone.confirmation.service';
-import { PhoneConfirmationController } from '@/business/auth/confirmation/phone.confirmation.controller';
+import { PhoneConfirmationService } from '@/business/auth/phone.confirmation.service';
+import { PhoneConfirmationController } from '@/business/auth/phone.confirmation.controller';
 import { JwtAuthSocketGuard } from '@/business/auth/guards/jwt-auth.socket.guard';
 import { SmsModule } from '@/infrastructure/sms/sms.module';
-import { PasswordService } from '@/business/auth/password/password.service';
-import { PasswordController } from '@/business/auth/password/password.controller';
+import { PasswordService } from '@/business/auth/password.service';
+import { PasswordController } from '@/business/auth/password.controller';
+import { CartModule } from '@/business/cart/cart.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PasswordController } from '@/business/auth/password/password.controller
         };
       },
     }),
+    CartModule,
     MailModule,
     SmsModule,
   ],

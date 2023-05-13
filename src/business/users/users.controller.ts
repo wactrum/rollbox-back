@@ -31,7 +31,6 @@ export class UsersController {
   @Permissions(Permission.CREATE_USER)
   @ApiCreatedResponse({ type: UserEntity })
   async create(@Body() createUserDto: CreateUserDto) {
-    console.warn(createUserDto);
     return this.usersService.create(createUserDto);
   }
 

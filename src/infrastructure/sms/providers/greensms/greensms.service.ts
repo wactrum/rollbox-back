@@ -17,7 +17,7 @@ export class GreensmsService extends SmsProvider implements OnModuleInit {
   }
 
   async onModuleInit() {
-    await this.login();
+    // await this.login();
   }
 
   async login() {

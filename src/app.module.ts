@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from '@/business/users/users.module';
-import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from '@/business/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -14,13 +13,15 @@ import { CacheModule } from '@/infrastructure/cache/cache.module';
 import { DeliveryLocationsModule } from '@/business/delivery-locations/delivery-locations.module';
 import { CategoriesModule } from '@/business/products/categories/categories.module';
 import { ProductsModule } from '@/business/products/products.module';
+import { PrismaModule } from '@/infrastructure/database/prisma/prisma.module';
+import { CartModule } from './business/cart/cart.module';
 
 @Module({
   imports: [
     // Libs
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot(),
-    PrismaModule.forRoot(),
+    PrismaModule,
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 1,
@@ -39,6 +40,7 @@ import { ProductsModule } from '@/business/products/products.module';
     DeliveryLocationsModule,
     CategoriesModule,
     ProductsModule,
+    CartModule,
   ],
   providers: [
     {

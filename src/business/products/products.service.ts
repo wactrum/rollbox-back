@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsRepository } from '@/business/products/products.repository';
+import { GetProductsDto } from '@/business/products/dto/get-products.dto';
+import {
+  PageMetaDto,
+  PaginatedResponseDto,
+} from '@/infrastructure/database/prisma/dto/pagination.dto';
 
 @Injectable()
 export class ProductsService {
@@ -11,8 +16,11 @@ export class ProductsService {
     return this.productsRepository.create(createProductDto);
   }
 
-  findAll() {
-    return this.productsRepository.findAll();
+  async findAllWithPagination(query: GetProductsDto) {
+    const [data, count] = await this.productsRepository.findWithPagination(query);
+
+    const pageMetaDto = new PageMetaDto({ itemCount: count, pageOptionsDto: query });
+    return new PaginatedResponseDto(data, pageMetaDto);
   }
 
   findOne(id: number) {

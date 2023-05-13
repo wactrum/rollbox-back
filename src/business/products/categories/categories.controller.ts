@@ -10,13 +10,13 @@ import { Permission } from '@/business/auth/permission.service';
 import { CategoryEntity } from '@/business/products/categories/entities/category.entity';
 
 @ApiTags('categories')
-@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RbacGuard)
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @ApiBearerAuth()
   @Permissions(Permission.CREATE_CATEGORY)
   @ApiCreatedResponse({ type: CategoryEntity })
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -36,6 +36,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @Permissions(Permission.UPDATE_CATEGORY)
   @ApiOkResponse({ type: CategoryEntity })
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
@@ -43,6 +44,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @Permissions(Permission.DELETE_CATEGORY)
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(+id);
