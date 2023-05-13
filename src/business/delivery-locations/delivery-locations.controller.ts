@@ -19,7 +19,7 @@ import { JwtAuthGuard } from '@/business/auth/guards/jwt-auth.guard';
 import { RbacGuard } from '@/business/auth/guards/rbac.guard';
 import { Permissions } from '@/business/auth/decorators/rbac.decorator';
 import { Permission } from '@/business/auth/permission.service';
-import { DeliveryOwnerGuard } from '@/business/delivery-locations/guard/owner.guard';
+import { DeliveryOwnerGuard } from '@/business/delivery-locations/guard/delivery-owner.guard';
 import { DeliveryLocationSearchDto } from '@/business/delivery-locations/dto/get-delivery-location.dto';
 import { DeliveryLocationEntity } from '@/business/delivery-locations/entities/delivery-location.entity';
 

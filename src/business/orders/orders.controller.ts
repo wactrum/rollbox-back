@@ -1,0 +1,63 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { OrdersService } from './orders.service';
+import { CreateOrderRequestDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
+import { GetOrdersDto } from '@/business/orders/dto/get-orders.dto';
+import { ApiPaginatedResponse } from '@/infrastructure/database/prisma/decorators/pagination.decorator';
+import { OrderEntity } from '@/business/orders/entities/order.entity';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '@/business/auth/guards/jwt-auth.guard';
+import { Permissions } from '@/business/auth/decorators/rbac.decorator';
+import { Permission } from '@/business/auth/permission.service';
+import { OrderOwnerGuard } from '@/business/orders/guard/order-owner.guard';
+
+@ApiTags('orders')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@Controller('orders')
+export class OrdersController {
+  constructor(private readonly ordersService: OrdersService) {}
+
+  @Post()
+  @ApiCreatedResponse({ type: OrderEntity })
+  create(@Request() request, @Body() createOrderDto: CreateOrderRequestDto) {
+    return this.ordersService.createFromCart(request.user.cartId, createOrderDto);
+  }
+
+  @Get()
+  @Permissions(Permission.VIEW_ORDERS)
+  @ApiPaginatedResponse(OrderEntity)
+  findAll(@Query() query: GetOrdersDto) {
+    return this.ordersService.findAllWithPagination(query);
+  }
+
+  @Get(':id')
+  @Permissions(Permission.VIEW_ORDER)
+  @UseGuards(OrderOwnerGuard)
+  @ApiOkResponse({ type: OrderEntity })
+  findOne(@Param('id') id: string) {
+    return this.ordersService.findOne(+id);
+  }
+
+  @Patch(':id')
+  @ApiOkResponse({ type: OrderEntity })
+  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+    return this.ordersService.update(+id, updateOrderDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.ordersService.remove(+id);
+  }
+}

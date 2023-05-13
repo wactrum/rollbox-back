@@ -20,6 +20,8 @@ import { Permission } from '@/business/auth/permission.service';
 import { ProductEntity } from '@/business/products/entities/product.entity';
 import { GetProductsDto } from '@/business/products/dto/get-products.dto';
 import { ApiPaginatedResponse } from '@/infrastructure/database/prisma/decorators/pagination.decorator';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import * as multer from 'fastify-multer';
 
 @ApiTags('products')
 @Controller('products')

@@ -22,10 +22,10 @@ export class PrismaPaginationService {
       take,
     };
 
-    if (sortBy && !sortableKeys.includes(sortBy)) {
-      throw new BadRequestException(`Invalid sort by, available: ${sortableKeys.join(', ')}`);
-    } else {
+    if (sortBy && sortableKeys.includes(sortBy)) {
       query.orderBy = { [sortBy]: sortOrder } as Record<keyof T, 'asc' | 'desc'>;
+    } else if (sortBy) {
+      throw new BadRequestException(`Invalid sort by, available: ${sortableKeys.join(', ')}`);
     }
 
     return query;

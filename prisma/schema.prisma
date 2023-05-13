@@ -103,6 +103,19 @@ model Product {
   productsOnCart   ProductsOnCart[]
   productsOnOrders ProductsOnOrders[]
   isDeleted        Boolean?           @default(false)
+  ProductImage     ProductImage[]
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  path      String
+  provider  Provider
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+}
+
+enum Provider {
+  LOCAL
 }
 
 model Cart {
@@ -128,7 +141,7 @@ model Order {
   id                 Int                @id @default(autoincrement())
   user               User               @relation(fields: [userId], references: [id])
   userId             Int
-  status             OrderStatuses
+  status             OrderStatuses      @default(CREATED)
   products           ProductsOnOrders[]
   createdAt          DateTime           @default(now())
   updatedAt          DateTime?
@@ -138,6 +151,7 @@ model Order {
   type               OrderType
   deliveryLocation   DeliveryLocation?  @relation(fields: [deliveryLocationId], references: [id])
   deliveryLocationId Int?
+  isDeleted          Boolean?           @default(false)
   // deliverTo   DateTime
 }
 
@@ -183,4 +197,8 @@ model ProductsOnOrders {
   order     Order   @relation(fields: [orderId], references: [id])
 
   @@unique([orderId, productId])
+}
+
+enum ImageTypes {
+  PRODUCT
 }

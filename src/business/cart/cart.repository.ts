@@ -25,7 +25,7 @@ export class CartRepository {
     });
   }
 
-  addProductToCart(data: AddToCartDto) {
+  async addProductToCart(data: AddToCartDto) {
     return this.prismaService.productsOnCart.upsert({
       where: {
         cartId_productId: {

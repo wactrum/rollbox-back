@@ -25,4 +25,9 @@ export enum Permission {
   CREATE_PRODUCTS = 'products.create',
   UPDATE_PRODUCT = 'products.update',
   DELETE_PRODUCT = 'products.delete',
+
+  VIEW_ORDERS = 'orders.viewAll',
+  VIEW_ORDER = 'orders.view',
+  UPDATE_ORDER = 'orders.update',
+  DELETE_ORDER = 'orders.delete',
 }

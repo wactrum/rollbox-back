@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaClientExceptionFilter, PrismaService } from 'nestjs-prisma';
+import { PrismaExceptionFilter } from '@/infrastructure/database/prisma/errors/prisma-exception.filter';
 
 declare const module: any;
 
@@ -21,11 +22,11 @@ export async function prepareServer(app: INestApplication): Promise<INestApplica
     })
   );
 
-  // Use Prisma and handle errors
+  // Use Prisma and handle prisma errors
   const prismaService: PrismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);
-  const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+  const adapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PrismaExceptionFilter(adapterHost));
 
   return app;
 }

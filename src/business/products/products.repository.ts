@@ -31,7 +31,7 @@ export class ProductsRepository {
     private prismaPaginationService: PrismaPaginationService
   ) {}
 
-  create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto) {
     return this.prismaService.product.create({
       data: createProductDto,
     });

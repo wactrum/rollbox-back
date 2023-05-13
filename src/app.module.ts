@@ -14,7 +14,9 @@ import { DeliveryLocationsModule } from '@/business/delivery-locations/delivery-
 import { CategoriesModule } from '@/business/products/categories/categories.module';
 import { ProductsModule } from '@/business/products/products.module';
 import { PrismaModule } from '@/infrastructure/database/prisma/prisma.module';
-import { CartModule } from './business/cart/cart.module';
+import { CartModule } from '@/business/cart/cart.module';
+import { OrdersModule } from './business/orders/orders.module';
+import { FilesModule } from './infrastructure/files/files.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { CartModule } from './business/cart/cart.module';
     CategoriesModule,
     ProductsModule,
     CartModule,
+    OrdersModule,
+    FilesModule,
   ],
   providers: [
     {

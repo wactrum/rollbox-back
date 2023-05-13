@@ -1,9 +1,10 @@
 import { Controller, Get, Param, Delete, Body, Post, Request, UseGuards } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddMultipleToCartRequestDto, AddToCartRequestDto } from '@/business/cart/dto/cart.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/business/auth/guards/jwt-auth.guard';
 import { RbacGuard } from '@/business/auth/guards/rbac.guard';
+import { CartEntity } from '@/business/cart/entities/cart.entity';
 
 @ApiTags('cart')
 @ApiBearerAuth()
@@ -13,6 +14,7 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Get()
+  @ApiOkResponse({ type: CartEntity })
   getCart(@Request() request) {
     return this.cartService.findById(request.user.cartId);
   }
