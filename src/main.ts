@@ -3,8 +3,11 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { PrismaClientExceptionFilter, PrismaService } from 'nestjs-prisma';
+import { PrismaService } from 'nestjs-prisma';
 import { PrismaExceptionFilter } from '@/infrastructure/database/prisma/errors/prisma-exception.filter';
+import multipart from '@fastify/multipart';
+import fstatic from '@fastify/static';
+import * as path from 'path';
 
 declare const module: any;
 
@@ -32,10 +35,17 @@ export async function prepareServer(app: INestApplication): Promise<INestApplica
 }
 
 async function bootstrap() {
-  let app: INestApplication = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter()
-  );
+  const adapter = new FastifyAdapter();
+
+  const staticPath = path.join(__dirname, '..', 'uploads');
+  adapter.register(fstatic, {
+    root: staticPath,
+    prefix: '/uploads/', // optional: default '/'
+  });
+
+  adapter.register(multipart);
+
+  let app: INestApplication = await NestFactory.create<NestFastifyApplication>(AppModule, adapter);
 
   app = await prepareServer(app);
   app.enableCors({

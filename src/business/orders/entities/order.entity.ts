@@ -1,11 +1,18 @@
-import { Order, OrderStatuses, OrderType, PaymentTypes, ProductsOnOrders } from '@prisma/client';
+import {
+  Order,
+  OrderCancellations,
+  OrderStatuses,
+  OrderType,
+  PaymentTypes,
+  ProductsOnOrders,
+} from '@prisma/client';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { DeliveryLocationEntity } from '@/business/delivery-locations/entities/delivery-location.entity';
 import { ProductEntity } from '@/business/products/entities/product.entity';
 
 export class ProductsOnOrdersEntity implements ProductsOnOrders {
-  discount: number;
   id: number;
+  discount: number;
   orderId: number;
   price: number;
   productId: number;
@@ -13,6 +20,12 @@ export class ProductsOnOrdersEntity implements ProductsOnOrders {
 
   @ApiProperty({ type: ProductEntity })
   product: ProductEntity;
+}
+
+export class OrderCancellationsEntity implements OrderCancellations {
+  id: number;
+  description: string;
+  orderId: number;
 }
 
 export class OrderEntity implements Order {
@@ -35,6 +48,9 @@ export class OrderEntity implements Order {
 
   @ApiProperty({ type: ProductsOnOrdersEntity })
   products: ProductsOnOrdersEntity;
+
+  @ApiProperty({ type: ProductsOnOrdersEntity, nullable: true })
+  orderCancellations?: OrderCancellationsEntity;
 
   @ApiHideProperty()
   isDeleted: boolean | null;

@@ -7,12 +7,20 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, CreateProductImageDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/business/auth/guards/jwt-auth.guard';
 import { RbacGuard } from '@/business/auth/guards/rbac.guard';
 import { Permissions } from '@/business/auth/decorators/rbac.decorator';
@@ -20,8 +28,8 @@ import { Permission } from '@/business/auth/permission.service';
 import { ProductEntity } from '@/business/products/entities/product.entity';
 import { GetProductsDto } from '@/business/products/dto/get-products.dto';
 import { ApiPaginatedResponse } from '@/infrastructure/database/prisma/decorators/pagination.decorator';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import * as multer from 'fastify-multer';
+import { createBaseImageFileInterceptor } from '@/utils/files/interceptors/base-image-file.interceptor';
+import { File } from 'fastify-multer/lib/interfaces';
 
 @ApiTags('products')
 @Controller('products')
@@ -35,6 +43,17 @@ export class ProductsController {
   @ApiCreatedResponse({ type: ProductEntity })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
+  }
+
+  @Post('image/upload')
+  @UseGuards(JwtAuthGuard, RbacGuard)
+  @Permissions(Permission.CREATE_PRODUCTS, Permission.UPDATE_PRODUCT)
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(createBaseImageFileInterceptor('./uploads/products'))
+  uploadImage(@Body() uploadImageDto: CreateProductImageDto, @UploadedFile() file: File) {
+    return this.productsService.createFile({
+      file,
+    });
   }
 
   @Get()

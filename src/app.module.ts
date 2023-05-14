@@ -16,7 +16,6 @@ import { ProductsModule } from '@/business/products/products.module';
 import { PrismaModule } from '@/infrastructure/database/prisma/prisma.module';
 import { CartModule } from '@/business/cart/cart.module';
 import { OrdersModule } from './business/orders/orders.module';
-import { FilesModule } from './infrastructure/files/files.module';
 
 @Module({
   imports: [
@@ -44,7 +43,6 @@ import { FilesModule } from './infrastructure/files/files.module';
     ProductsModule,
     CartModule,
     OrdersModule,
-    FilesModule,
   ],
   providers: [
     {

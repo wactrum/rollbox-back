@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, CreateProductImageDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { GetProductsDto } from '@/business/products/dto/get-products.dto';
-import { Product, Prisma } from '@prisma/client';
+import { Product, Prisma, Provider } from '@prisma/client';
 import { PrismaPaginationService } from '@/infrastructure/database/prisma/prisma.pagination.service';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class ProductsRepository {
     'discount',
     'categoryId',
   ];
-  select = {
+  select: Prisma.ProductSelect = {
     id: true,
     name: true,
     description: true,
@@ -24,6 +24,7 @@ export class ProductsRepository {
     discount: true,
     categoryId: true,
     category: true,
+    productImage: true,
   };
 
   constructor(
@@ -34,6 +35,16 @@ export class ProductsRepository {
   async create(createProductDto: CreateProductDto) {
     return this.prismaService.product.create({
       data: createProductDto,
+      include: { productImage: true },
+    });
+  }
+
+  async createFile(createFileDto: CreateProductImageDto) {
+    return this.prismaService.productImage.create({
+      data: {
+        path: createFileDto.file.path,
+        provider: Provider.LOCAL,
+      },
     });
   }
 

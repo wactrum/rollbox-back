@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsBoolean } from 'class-validator';
 import { CastToBoolean } from '@/utils/transform/bool.transform';
-import { ProcessSearch } from '@/utils/transform/string.transform';
+import { FullTextSearch } from '@/utils/transform/string.transform';
 
 export class DeliveryLocationSearchDto {
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
-  @ProcessSearch()
+  @FullTextSearch()
   search?: string;
 
   @IsOptional()

@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, CreateProductImageDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsRepository } from '@/business/products/products.repository';
 import { GetProductsDto } from '@/business/products/dto/get-products.dto';
@@ -14,6 +14,10 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     return this.productsRepository.create(createProductDto);
+  }
+
+  async createFile(createProductImageDto: CreateProductImageDto) {
+    return this.productsRepository.createFile(createProductImageDto);
   }
 
   async findAllWithPagination(query: GetProductsDto) {

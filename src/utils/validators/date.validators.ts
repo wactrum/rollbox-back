@@ -1,4 +1,9 @@
-import { registerDecorator, ValidationOptions } from 'class-validator';
+import {
+  registerDecorator, ValidationArguments,
+  ValidationOptions,
+  ValidatorConstraint,
+  ValidatorConstraintInterface
+} from 'class-validator';
 
 export function IsDateLessThanToday(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
@@ -18,4 +23,21 @@ export function IsDateLessThanToday(validationOptions?: ValidationOptions) {
       },
     });
   };
+}
+
+@ValidatorConstraint({ name: 'IsDateGreaterThan', async: false })
+export class IsDateGreaterThan implements ValidatorConstraintInterface {
+  validate(value: Date, args: ValidationArguments) {
+    const [relatedPropertyName] = args.constraints;
+    const relatedValue = (args.object as any)[relatedPropertyName];
+    if (relatedValue === undefined || value === undefined) {
+      return true;
+    }
+    return value >= relatedValue;
+  }
+
+  defaultMessage(args: ValidationArguments) {
+    const [relatedPropertyName] = args.constraints;
+    return `The date must be greater than or equal to ${relatedPropertyName}`;
+  }
 }

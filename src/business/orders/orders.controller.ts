@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '@/business/auth/guards/jwt-auth.guard';
 import { Permissions } from '@/business/auth/decorators/rbac.decorator';
 import { Permission } from '@/business/auth/permission.service';
 import { OrderOwnerGuard } from '@/business/orders/guard/order-owner.guard';
+import { CancelOrderDto } from '@/business/orders/dto/cancel-order.dto';
 
 @ApiTags('orders')
 @ApiBearerAuth()
@@ -59,5 +60,12 @@ export class OrdersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);
+  }
+
+  @Post('/cancel')
+  @UseGuards(OrderOwnerGuard)
+  @Permissions(Permission.UPDATE_ORDER)
+  cancel(@Param('id') id: string, @Body() cancelOrderDto: CancelOrderDto) {
+    return this.ordersService.cancel(+id, cancelOrderDto);
   }
 }

@@ -4,9 +4,13 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrdersRepository } from '@/business/orders/orders.repository';
 import { CartRepository } from '@/business/cart/cart.repository';
 import { CartEntity, ProductsOnCartEntity } from '@/business/cart/entities/cart.entity';
-import { GetOrdersDto } from '@/business/orders/dto/get-orders.dto';
-import { GetProductsDto } from "@/business/products/dto/get-products.dto";
-import { PageMetaDto, PaginatedResponseDto } from "@/infrastructure/database/prisma/dto/pagination.dto";
+import { GetProductsDto } from '@/business/products/dto/get-products.dto';
+import {
+  PageMetaDto,
+  PaginatedResponseDto,
+} from '@/infrastructure/database/prisma/dto/pagination.dto';
+import { CancelOrderDto } from '@/business/orders/dto/cancel-order.dto';
+import { OrderStatuses } from '@prisma/client';
 
 @Injectable()
 export class OrdersService {
@@ -70,5 +74,16 @@ export class OrdersService {
 
   remove(id: number) {
     return this.ordersRepository.remove(id);
+  }
+
+  async cancel(id: number, cancelOrderDto: CancelOrderDto) {
+    const [order] = await Promise.all([
+      this.ordersRepository.update(id, {
+        status: OrderStatuses.CANCELED,
+      }),
+      this.ordersRepository.createOrderCancellations(id, cancelOrderDto),
+    ]);
+
+    return order;
   }
 }

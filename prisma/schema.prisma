@@ -103,15 +103,15 @@ model Product {
   productsOnCart   ProductsOnCart[]
   productsOnOrders ProductsOnOrders[]
   isDeleted        Boolean?           @default(false)
-  ProductImage     ProductImage[]
+  productImage     ProductImage       @relation(fields: [productImageId], references: [id])
+  productImageId   Int                @unique
 }
 
 model ProductImage {
-  id        Int      @id @default(autoincrement())
-  path      String
-  provider  Provider
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
+  id       Int      @id @default(autoincrement())
+  path     String
+  provider Provider
+  product  Product?
 }
 
 enum Provider {
@@ -138,21 +138,29 @@ model ProductsOnCart {
 
 // Order
 model Order {
-  id                 Int                @id @default(autoincrement())
-  user               User               @relation(fields: [userId], references: [id])
+  id                 Int                 @id @default(autoincrement())
+  user               User                @relation(fields: [userId], references: [id])
   userId             Int
-  status             OrderStatuses      @default(CREATED)
+  status             OrderStatuses       @default(CREATED)
   products           ProductsOnOrders[]
-  createdAt          DateTime           @default(now())
+  createdAt          DateTime            @default(now())
   updatedAt          DateTime?
   location           String?
   paymentType        PaymentTypes?
   price              Float
   type               OrderType
-  deliveryLocation   DeliveryLocation?  @relation(fields: [deliveryLocationId], references: [id])
+  deliveryLocation   DeliveryLocation?   @relation(fields: [deliveryLocationId], references: [id])
   deliveryLocationId Int?
-  isDeleted          Boolean?           @default(false)
+  isDeleted          Boolean?            @default(false)
+  orderCancellations OrderCancellations?
   // deliverTo   DateTime
+}
+
+model OrderCancellations {
+  id          Int    @id @default(autoincrement())
+  order       Order  @relation(fields: [orderId], references: [id])
+  orderId     Int    @unique
+  description String
 }
 
 enum OrderType {

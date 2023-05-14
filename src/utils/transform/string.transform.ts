@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 
-export function ProcessSearch() {
+export function FullTextSearch() {
   return Transform(({ value }) => {
     if (typeof value !== 'string') return null;
 
