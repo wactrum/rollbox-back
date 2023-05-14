@@ -37,3 +37,5 @@ export class GetOrdersDto extends PaginationQueryDto {
   @Validate(IsDateGreaterThan, ['createdAtFrom'])
   createdAtTo?: Date;
 }
+
+export class GetUserOrdersDto extends PaginationQueryDto {}

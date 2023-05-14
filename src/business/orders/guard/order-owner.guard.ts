@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UsersService } from '@/business/users/users.service';
 import { CacheService } from '@/infrastructure/cache/cache.service';
-import { DeliveryLocationsService } from '@/business/delivery-locations/delivery-locations.service';
 import { IsOwnerGuard } from '@/business/auth/guards/abstract.owner.guard';
 import { OrdersService } from '@/business/orders/orders.service';
 

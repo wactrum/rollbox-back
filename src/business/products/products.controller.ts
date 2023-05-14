@@ -46,6 +46,7 @@ export class ProductsController {
   }
 
   @Post('image/upload')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RbacGuard)
   @Permissions(Permission.CREATE_PRODUCTS, Permission.UPDATE_PRODUCT)
   @ApiConsumes('multipart/form-data')

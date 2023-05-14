@@ -13,7 +13,7 @@ import {
 import { OrdersService } from './orders.service';
 import { CreateOrderRequestDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { GetOrdersDto } from '@/business/orders/dto/get-orders.dto';
+import { GetOrdersDto, GetUserOrdersDto } from '@/business/orders/dto/get-orders.dto';
 import { ApiPaginatedResponse } from '@/infrastructure/database/prisma/decorators/pagination.decorator';
 import { OrderEntity } from '@/business/orders/entities/order.entity';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -41,6 +41,12 @@ export class OrdersController {
   @ApiPaginatedResponse(OrderEntity)
   findAll(@Query() query: GetOrdersDto) {
     return this.ordersService.findAllWithPagination(query);
+  }
+
+  @Get('/my')
+  @ApiPaginatedResponse(OrderEntity)
+  findMy(@Request() request, @Query() query: GetUserOrdersDto) {
+    return this.ordersService.findByUserWithPagination(request.user.id, query);
   }
 
   @Get(':id')

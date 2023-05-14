@@ -11,6 +11,7 @@ import {
 } from '@/infrastructure/database/prisma/dto/pagination.dto';
 import { CancelOrderDto } from '@/business/orders/dto/cancel-order.dto';
 import { OrderStatuses } from '@prisma/client';
+import { GetUserOrdersDto } from '@/business/orders/dto/get-orders.dto';
 
 @Injectable()
 export class OrdersService {
@@ -64,6 +65,14 @@ export class OrdersService {
     const pageMetaDto = new PageMetaDto({ itemCount: count, pageOptionsDto: query });
     return new PaginatedResponseDto(data, pageMetaDto);
   }
+
+  async findByUserWithPagination(userId: number, query: GetUserOrdersDto) {
+    const [data, count] = await this.ordersRepository.findAllWithPagination(query);
+
+    const pageMetaDto = new PageMetaDto({ itemCount: count, pageOptionsDto: query });
+    return new PaginatedResponseDto(data, pageMetaDto);
+  }
+
   findOne(id: number) {
     return this.ordersRepository.findOne(id);
   }

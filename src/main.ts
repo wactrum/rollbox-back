@@ -38,6 +38,7 @@ async function bootstrap() {
   const adapter = new FastifyAdapter();
 
   const staticPath = path.join(__dirname, '..', 'uploads');
+
   adapter.register(fstatic, {
     root: staticPath,
     prefix: '/uploads/', // optional: default '/'
@@ -48,6 +49,7 @@ async function bootstrap() {
   let app: INestApplication = await NestFactory.create<NestFastifyApplication>(AppModule, adapter);
 
   app = await prepareServer(app);
+
   app.enableCors({
     origin: '*',
     methods: '*',
