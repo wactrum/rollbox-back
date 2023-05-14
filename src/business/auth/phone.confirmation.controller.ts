@@ -20,7 +20,6 @@ export class PhoneConfirmationController {
   @Post('confirm')
   async confirm(@Request() req, @Body() body: ConfirmDto) {
     const user = await this.confirmationService.confirmPhone(body.phone, body.code);
-    console.warn(user)
     return this.authService.login(user, req.headers['user-agent']);
   }
 

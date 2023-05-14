@@ -11,10 +11,6 @@ export class PasswordService extends ConfirmationService {
   type = PhoneConfirmationType.PASSWORD_RESET;
   resendTime = 3;
 
-  getText(code): string {
-    return `Для сброса пароля на сервисе RollBox введите код ${code}`;
-  }
-
   constructor(
     protected readonly configService: ConfigService,
     protected readonly smsService: SmsService,
@@ -69,5 +65,10 @@ export class PasswordService extends ConfirmationService {
     await this.usersService.update(user.id, {
       password,
     });
+  }
+
+  getText(code): string {
+    const serviceName = this.configService.get('SERVICE_NAME');
+    return `Для сброса пароля на сервисе ${serviceName} введите код ${code}`;
   }
 }

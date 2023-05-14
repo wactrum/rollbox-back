@@ -9,9 +9,6 @@ import { CartService } from '@/business/cart/cart.service';
 @Injectable()
 export class PhoneConfirmationService extends ConfirmationService {
   type = PhoneConfirmationType.REGISTER;
-  getText(code: any): string {
-    return `Для подтверждения регистрации на RollBox введите код ${code}`;
-  }
 
   constructor(
     protected readonly configService: ConfigService,
@@ -42,5 +39,10 @@ export class PhoneConfirmationService extends ConfirmationService {
     await this.cartService.create(phoneConfirmation.userId);
 
     return this.usersService.markPhoneAsConfirmed(phone);
+  }
+
+  getText(code: any): string {
+    const serviceName = this.configService.get('SERVICE_NAME');
+    return `Для подтверждения регистрации на ${serviceName} введите код ${code}`;
   }
 }
