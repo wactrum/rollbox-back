@@ -13,8 +13,7 @@ export class PhoneConfirmationService extends ConfirmationService {
   constructor(
     protected readonly configService: ConfigService,
     protected readonly smsService: SmsService,
-    protected readonly usersService: UsersService,
-    protected readonly cartService: CartService
+    protected readonly usersService: UsersService
   ) {
     super(configService, smsService, usersService);
   }
@@ -35,8 +34,6 @@ export class PhoneConfirmationService extends ConfirmationService {
     if (phoneConfirmation.isUsed) {
       throw new BadRequestException('Already confirmed');
     }
-
-    await this.cartService.create(phoneConfirmation.userId);
 
     return this.usersService.markPhoneAsConfirmed(phone);
   }

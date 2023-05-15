@@ -47,6 +47,13 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         status: 400,
       }),
     ],
+    [
+      'P2025',
+      (error) => ({
+        message: `Record to update not found`,
+        status: 404,
+      }),
+    ],
     // Add more error handlers here
   ]);
   message = 'A server error has occurred.';

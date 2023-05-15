@@ -13,6 +13,7 @@ import { CacheService } from '@/infrastructure/cache/cache.service';
 import { CacheTypes } from '@/infrastructure/cache/cache.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserConfirmedEvent } from '@/business/auth/events/user.confirmed';
+import { CartService } from '@/business/cart/cart.service';
 
 export const select = {
   id: true,
@@ -26,18 +27,14 @@ export const select = {
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private prisma: PrismaService,
-    private cacheService: CacheService,
-    private eventEmitter: EventEmitter2
-  ) {}
+  constructor(private prisma: PrismaService, private cacheService: CacheService) {}
 
   async create(createUserDto: CreateUserDto) {
     createUserDto.phone = createUserDto.phone.replace('+', '');
 
     createUserDto.password = await argon2.hash(createUserDto.password);
     return this.prisma.user.create({
-      data: createUserDto,
+      data: { ...createUserDto, cart: { create: {} } },
       select,
     });
   }

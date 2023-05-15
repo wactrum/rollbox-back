@@ -50,10 +50,13 @@ export class ProductsRepository {
 
   async findWithPagination(params: GetProductsDto) {
     const query = this.prismaPaginationService.getPaginationQuery(params, this.sortableFields);
+    const search = params.search;
 
     const where: Prisma.ProductWhereInput = {
       isDeleted: false,
       categoryId: params.categoryId,
+
+      OR: search && [{ name: { contains: search } }, { description: { contains: search } }],
     };
 
     const findPromise = this.prismaService.product.findMany({

@@ -28,7 +28,6 @@ import { CartModule } from '@/business/cart/cart.module';
         };
       },
     }),
-    CartModule,
     MailModule,
     SmsModule,
   ],

@@ -4,14 +4,13 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrdersRepository } from '@/business/orders/orders.repository';
 import { CartRepository } from '@/business/cart/cart.repository';
 import { CartEntity, ProductsOnCartEntity } from '@/business/cart/entities/cart.entity';
-import { GetProductsDto } from '@/business/products/dto/get-products.dto';
 import {
   PageMetaDto,
   PaginatedResponseDto,
 } from '@/infrastructure/database/prisma/dto/pagination.dto';
 import { CancelOrderDto } from '@/business/orders/dto/cancel-order.dto';
 import { OrderStatuses } from '@prisma/client';
-import { GetUserOrdersDto } from '@/business/orders/dto/get-orders.dto';
+import { GetOrdersDto, GetUserOrdersDto } from '@/business/orders/dto/get-orders.dto';
 
 @Injectable()
 export class OrdersService {
@@ -59,16 +58,14 @@ export class OrdersService {
     return this.ordersRepository.checkIsAuthor(id, userId);
   }
 
-  async findAllWithPagination(query: GetProductsDto) {
+  async findAllWithPagination(query: GetOrdersDto) {
     const [data, count] = await this.ordersRepository.findAllWithPagination(query);
-
     const pageMetaDto = new PageMetaDto({ itemCount: count, pageOptionsDto: query });
     return new PaginatedResponseDto(data, pageMetaDto);
   }
 
   async findByUserWithPagination(userId: number, query: GetUserOrdersDto) {
-    const [data, count] = await this.ordersRepository.findAllWithPagination(query);
-
+    const [data, count] = await this.ordersRepository.findByUserWithPagination(userId, query);
     const pageMetaDto = new PageMetaDto({ itemCount: count, pageOptionsDto: query });
     return new PaginatedResponseDto(data, pageMetaDto);
   }
