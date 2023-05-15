@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'nestjs-prisma';
+import { GetCategoriesWithProductsDto } from '@/business/products/categories/dto/get-category.dto';
 
 @Injectable()
 export class CategoriesRepository {
@@ -15,6 +16,26 @@ export class CategoriesRepository {
 
   findAll() {
     return this.prismaService.category.findMany();
+  }
+
+  findAllWithProducts(query: GetCategoriesWithProductsDto) {
+    return this.prismaService.category.findMany({
+      include: {
+        products: {
+          where: {
+            isDeleted: false,
+
+            OR: query.search && [
+              { name: { contains: query.search, mode: 'insensitive' } },
+              { description: { contains: query.search, mode: 'insensitive' } },
+            ],
+          },
+          include: {
+            productImage: true,
+          },
+        },
+      },
+    });
   }
 
   findOne(id: number) {

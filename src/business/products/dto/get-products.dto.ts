@@ -9,5 +9,5 @@ export class GetProductsDto extends PaginationQueryDto {
 
   @IsOptional()
   @IsString()
-  search: string;
+  search?: string;
 }

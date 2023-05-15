@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoriesRepository } from '@/business/products/categories/categories.repository';
+import { GetCategoriesWithProductsDto } from "@/business/products/categories/dto/get-category.dto";
 
 @Injectable()
 export class CategoriesService {
@@ -13,6 +14,10 @@ export class CategoriesService {
 
   findAll() {
     return this.categoriesRepository.findAll();
+  }
+
+  findAllWithProducts(dto: GetCategoriesWithProductsDto) {
+    return this.categoriesRepository.findAllWithProducts(dto);
   }
 
   findOne(id: number) {
