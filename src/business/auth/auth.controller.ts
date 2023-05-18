@@ -1,5 +1,4 @@
-import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
-import { LocalAuthGuard } from '@/business/auth/guards/local-auth.guard';
+import { Controller, Request, Post, Body } from '@nestjs/common';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import {
   AuthDto,
@@ -19,12 +18,12 @@ export class AuthController {
   /**
    * Authorization in the system
    */
-  @UseGuards(LocalAuthGuard)
   @ApiCreatedResponse({ type: LoginResponseDto })
   @ApiDefaultBadRequestResponse()
   @Post('login')
   async login(@Request() req, @Body() body: AuthDto) {
-    return this.authService.login(req.user, req.headers['user-agent']);
+    const user = this.authService.validateAuth(body);
+    return this.authService.login(user, req.headers['user-agent']);
   }
 
   /**

@@ -7,7 +7,7 @@ import {
 import { UsersService } from '@/business/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { RegisterDto } from '@/business/auth/dto/auth.dto';
+import { AuthDto, RegisterDto } from '@/business/auth/dto/auth.dto';
 import { MailService } from '@/infrastructure/mail/mail.service';
 import { ConfigService } from '@nestjs/config';
 import { PhoneConfirmationService } from '@/business/auth/phone.confirmation.service';
@@ -24,23 +24,21 @@ export class AuthService {
     private confirmationService: PhoneConfirmationService
   ) {}
 
-  /**
-   * Проверка доступа по логину/паролю
-   * Идет через strategies local.strategy
-   */
-  async validateUser(phone: string, password: string): Promise<any> {
-    const user = await this.usersService.findConfirmedByPhone(phone);
+  async validateAuth(data: AuthDto): Promise<any> {
+    const user = await this.usersService.findConfirmedByPhone(data.phone);
 
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    const match = await argon2.verify(user.password, password);
+    const match = await argon2.verify(user.password, data.password);
+
     if (match) {
       const { password, ...result } = user;
       return result;
     }
-    return null;
+
+    throw new UnauthorizedException();
   }
 
   async login(user: any, userAgent?: string) {

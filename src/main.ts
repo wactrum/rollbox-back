@@ -2,7 +2,12 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  INestApplication,
+  ValidationError,
+  ValidationPipe,
+} from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { PrismaExceptionFilter } from '@/infrastructure/database/prisma/errors/prisma-exception.filter';
 import multipart from '@fastify/multipart';
@@ -22,6 +27,8 @@ export async function prepareServer(app: INestApplication): Promise<INestApplica
     new ValidationPipe({
       whitelist: true,
       transform: true,
+      exceptionFactory: (errors: ValidationError[]) =>
+        new BadRequestException(errors.map((el) => ({ key: el.property, errors: el.constraints }))),
     })
   );
 
