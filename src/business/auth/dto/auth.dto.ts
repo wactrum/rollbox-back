@@ -1,9 +1,11 @@
-import { IsEmail, IsNotEmpty, IsMobilePhone, IsNumberString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsMobilePhone } from 'class-validator';
 import { UserEntity } from '@/business/users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { TransformToDigits } from '@/utils/transform/string.transform';
 
 export class AuthDto {
   @IsMobilePhone('ru-RU')
+  @TransformToDigits()
   phone: string;
 
   @IsNotEmpty()
@@ -21,6 +23,7 @@ export class LoginResponseDto {
 
 export class RegisterDto {
   @IsMobilePhone('ru-RU')
+  @TransformToDigits()
   phone: string;
   @IsNotEmpty()
   name: string;
@@ -30,6 +33,7 @@ export class RegisterDto {
 
 export class ResendRegisterSms {
   @IsMobilePhone('ru-RU')
+  @TransformToDigits()
   phone: string;
 }
 

@@ -30,8 +30,6 @@ export class UsersService {
   constructor(private prisma: PrismaService, private cacheService: CacheService) {}
 
   async create(createUserDto: CreateUserDto) {
-    createUserDto.phone = createUserDto.phone.replace('+', '');
-
     createUserDto.password = await argon2.hash(createUserDto.password);
     return this.prisma.user.create({
       data: { ...createUserDto, cart: { create: {} } },

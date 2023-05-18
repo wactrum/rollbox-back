@@ -20,8 +20,6 @@ export class PasswordService extends ConfirmationService {
   }
 
   async sendResetPasswordCode(phone: string) {
-    phone = phone.replace('+', '');
-
     const user = await this.usersService.findByPhoneWithPasswordConfirmation(phone);
 
     if (!user) {
@@ -38,8 +36,7 @@ export class PasswordService extends ConfirmationService {
   }
 
   async confirmResetPassword(data: ConfirmResetPasswordDto) {
-    const { code, password } = data;
-    const phone = data.phone.replace('+', '');
+    const { code, password, phone } = data;
 
     const user = await this.usersService.findConfirmedByPhone(phone);
 

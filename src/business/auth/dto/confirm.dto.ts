@@ -1,8 +1,10 @@
 import { IsMobilePhone, IsNotEmpty } from 'class-validator';
+import { TransformToDigits } from '@/utils/transform/string.transform';
 
 export class ConfirmDto {
   @IsNotEmpty()
   @IsMobilePhone('ru-RU')
+  @TransformToDigits()
   phone: string;
 
   @IsNotEmpty()
@@ -12,6 +14,7 @@ export class ConfirmDto {
 export class ConfirmResetPasswordDto {
   @IsNotEmpty()
   @IsMobilePhone('ru-RU')
+  @TransformToDigits()
   phone: string;
 
   @IsNotEmpty()

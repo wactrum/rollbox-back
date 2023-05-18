@@ -22,7 +22,7 @@ export class AuthController {
   @ApiDefaultBadRequestResponse()
   @Post('login')
   async login(@Request() req, @Body() body: AuthDto) {
-    const user = this.authService.validateAuth(body);
+    const user = await this.authService.validateAuth(body);
     return this.authService.login(user, req.headers['user-agent']);
   }
 

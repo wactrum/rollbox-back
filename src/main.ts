@@ -2,17 +2,14 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import {
-  BadRequestException,
-  INestApplication,
-  ValidationError,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { PrismaExceptionFilter } from '@/infrastructure/database/prisma/errors/prisma-exception.filter';
 import multipart from '@fastify/multipart';
 import fstatic from '@fastify/static';
 import * as path from 'path';
+import exceptionFactory from '@/utils/errors/exceptionFactory';
+import { ConfigService } from "@nestjs/config";
 
 declare const module: any;
 
@@ -27,8 +24,7 @@ export async function prepareServer(app: INestApplication): Promise<INestApplica
     new ValidationPipe({
       whitelist: true,
       transform: true,
-      exceptionFactory: (errors: ValidationError[]) =>
-        new BadRequestException(errors.map((el) => ({ key: el.property, errors: el.constraints }))),
+      exceptionFactory: exceptionFactory,
     })
   );
 
@@ -38,6 +34,20 @@ export async function prepareServer(app: INestApplication): Promise<INestApplica
   const adapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaExceptionFilter(adapterHost));
 
+  return app;
+}
+
+function enableSwagger(app: INestApplication): INestApplication {
+  // Use Swagger docs
+  const config = new DocumentBuilder()
+    .setTitle('Nest-template API')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  const swaggerPrefix = app.get(ConfigService).get('SWAGGER_PREFIX');
+
+  SwaggerModule.setup(`${swaggerPrefix}/docs`, app, document);
   return app;
 }
 
@@ -68,14 +78,7 @@ async function bootstrap() {
     module.hot.dispose(() => app.close());
   }
 
-  // Use Swagger docs
-  const config = new DocumentBuilder()
-    .setTitle('Nest-template API')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  enableSwagger(app);
 
   await app.listen(3000, '0.0.0.0');
 }

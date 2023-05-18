@@ -19,8 +19,6 @@ export class PhoneConfirmationService extends ConfirmationService {
   }
 
   async confirmPhone(phone: string, code: string) {
-    phone = phone.replace('+', '');
-
     const phoneConfirmation = await this.usersService.findUnusedConfirmation(
       phone,
       code,

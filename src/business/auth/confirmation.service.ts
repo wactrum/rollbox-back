@@ -54,7 +54,6 @@ export abstract class ConfirmationService {
   }
 
   async resendConfirmationCode(phone: string) {
-    phone = phone.replace('+', '');
     const phoneConfirmation = await this.usersService.findPhoneConfirmation(phone, this.type);
 
     if (!phoneConfirmation) {

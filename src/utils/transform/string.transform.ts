@@ -14,3 +14,7 @@ export function FullTextSearch() {
     return words.join(' | ');
   });
 }
+
+export function TransformToDigits() {
+  return Transform(({ value }) => value.replace(/\D/g, ''));
+}
