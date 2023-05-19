@@ -15,7 +15,9 @@ export class CategoriesRepository {
   }
 
   findAll() {
-    return this.prismaService.category.findMany();
+    return this.prismaService.category.findMany({
+      orderBy: { id: 'asc' },
+    });
   }
 
   findAllWithProducts(query: GetCategoriesWithProductsDto) {
@@ -35,6 +37,7 @@ export class CategoriesRepository {
           },
         },
       },
+      orderBy: { id: 'asc' },
     });
   }
 

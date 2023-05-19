@@ -1,4 +1,4 @@
-import { BadRequestException, Global, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PaginationQueryDto } from '@/infrastructure/database/prisma/dto/pagination.dto';
 
 interface PaginationQuery<T extends object> {
@@ -9,7 +9,6 @@ interface PaginationQuery<T extends object> {
   };
 }
 
-@Global()
 @Injectable()
 export class PrismaPaginationService {
   public getPaginationQuery<T extends object>(

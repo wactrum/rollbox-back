@@ -9,7 +9,7 @@ import multipart from '@fastify/multipart';
 import fstatic from '@fastify/static';
 import * as path from 'path';
 import exceptionFactory from '@/utils/errors/exceptionFactory';
-import { ConfigService } from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 
 declare const module: any;
 
