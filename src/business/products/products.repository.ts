@@ -35,7 +35,7 @@ export class ProductsRepository {
   async create(createProductDto: CreateProductDto) {
     return this.prismaService.product.create({
       data: createProductDto,
-      include: { productImage: true },
+      include: { productImage: true, category: true },
     });
   }
 
@@ -76,6 +76,7 @@ export class ProductsRepository {
     return this.prismaService.product.update({
       where: { id },
       data: updateProductDto,
+      include: { productImage: true, category: true },
     });
   }
 
