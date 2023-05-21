@@ -56,7 +56,11 @@ export class ProductsRepository {
       isDeleted: false,
       categoryId: params.categoryId,
 
-      OR: search && [{ name: { contains: search } }, { description: { contains: search } }],
+      OR: search && [
+        { name: { contains: search } },
+        { description: { contains: search } },
+        { category: { name: { contains: search } } },
+      ],
     };
 
     const findPromise = this.prismaService.product.findMany({

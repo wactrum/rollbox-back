@@ -1,5 +1,5 @@
 import { PaginationQueryDto } from '@/infrastructure/database/prisma/dto/pagination.dto';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class GetProductsDto extends PaginationQueryDto {
@@ -8,6 +8,7 @@ export class GetProductsDto extends PaginationQueryDto {
   categoryId?: number;
 
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   search?: string;
 }
