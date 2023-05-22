@@ -9,7 +9,7 @@ import {
   Delete,
   UseGuards,
   Query,
-  Req,
+  Req, ParseIntPipe
 } from '@nestjs/common';
 import { DeliveryLocationsService } from './delivery-locations.service';
 import { CreateDeliveryLocationDto } from './dto/create-delivery-location.dto';
@@ -57,7 +57,7 @@ export class DeliveryLocationsController {
   @UseGuards(DeliveryOwnerGuard)
   @Permissions(Permission.VIEW_DELIVERY_LOCATION)
   @ApiOkResponse({ type: DeliveryLocationEntity })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.deliveryLocationsService.findOne(+id);
   }
 
@@ -65,14 +65,14 @@ export class DeliveryLocationsController {
   @UseGuards(DeliveryOwnerGuard)
   @Permissions(Permission.UPDATE_DELIVERY_LOCATIONS)
   @ApiOkResponse({ type: DeliveryLocationEntity })
-  update(@Param('id') id: string, @Body() updateDeliveryLocationDto: UpdateDeliveryLocationDto) {
+  update(@Param('id', ParseIntPipe) id: string, @Body() updateDeliveryLocationDto: UpdateDeliveryLocationDto) {
     return this.deliveryLocationsService.update(+id, updateDeliveryLocationDto);
   }
 
   @Delete(':id')
   @UseGuards(DeliveryOwnerGuard)
   @Permissions(Permission.DELETE_DELIVERY_LOCATIONS)
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.deliveryLocationsService.remove(+id);
   }
 }

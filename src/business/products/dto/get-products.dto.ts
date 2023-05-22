@@ -1,6 +1,7 @@
 import { PaginationQueryDto } from '@/infrastructure/database/prisma/dto/pagination.dto';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CastToBoolean } from '@/utils/transform/bool.transform';
 
 export class GetProductsDto extends PaginationQueryDto {
   @IsOptional()
@@ -11,4 +12,11 @@ export class GetProductsDto extends PaginationQueryDto {
   @IsNotEmpty()
   @IsString()
   search?: string;
+}
+
+export class GetAdminProductsDto extends GetProductsDto {
+  @IsOptional()
+  @IsBoolean()
+  @CastToBoolean()
+  showDeleted?: boolean;
 }

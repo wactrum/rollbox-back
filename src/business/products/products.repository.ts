@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto, CreateProductImageDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'nestjs-prisma';
-import { GetProductsDto } from '@/business/products/dto/get-products.dto';
+import { GetAdminProductsDto, GetProductsDto } from '@/business/products/dto/get-products.dto';
 import { Product, Prisma, Provider } from '@prisma/client';
 import { PrismaPaginationService } from '@/infrastructure/database/prisma/prisma.pagination.service';
 
@@ -48,12 +48,13 @@ export class ProductsRepository {
     });
   }
 
-  async findWithPagination(params: GetProductsDto) {
+  async findWithPagination(params: GetProductsDto | GetAdminProductsDto) {
     const query = this.prismaPaginationService.getPaginationQuery(params, this.sortableFields);
     const search = params.search;
+    const isDeleted = params instanceof GetAdminProductsDto ? params.showDeleted : false;
 
     const where: Prisma.ProductWhereInput = {
-      isDeleted: false,
+      isDeleted,
       categoryId: params.categoryId,
 
       OR: search && [

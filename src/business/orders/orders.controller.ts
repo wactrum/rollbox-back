@@ -3,12 +3,12 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, ParseIntPipe,
   Patch,
   Post,
   Query,
   Request,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderRequestDto } from './dto/create-order.dto';
@@ -53,25 +53,25 @@ export class OrdersController {
   @Permissions(Permission.VIEW_ORDER)
   @UseGuards(OrderOwnerGuard)
   @ApiOkResponse({ type: OrderEntity })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.ordersService.findOne(+id);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: OrderEntity })
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+  update(@Param('id', ParseIntPipe) id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(+id, updateOrderDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.ordersService.remove(+id);
   }
 
   @Post('/cancel')
   @UseGuards(OrderOwnerGuard)
   @Permissions(Permission.UPDATE_ORDER)
-  cancel(@Param('id') id: string, @Body() cancelOrderDto: CancelOrderDto) {
+  cancel(@Param('id', ParseIntPipe) id: string, @Body() cancelOrderDto: CancelOrderDto) {
     return this.ordersService.cancel(+id, cancelOrderDto);
   }
 }

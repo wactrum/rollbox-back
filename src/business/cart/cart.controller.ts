@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Delete, Body, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Delete, Body, Post, Request, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddMultipleToCartRequestDto, AddToCartRequestDto } from '@/business/cart/dto/cart.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -36,7 +36,7 @@ export class CartController {
   }
 
   @Delete('/product/:productId')
-  removeItem(@Request() request, @Param('productId') productId: string) {
+  removeItem(@Request() request, @Param('productId', ParseIntPipe) productId: string) {
     return this.cartService.removeProductFromCart({
       cartId: +request.user.cartId,
       productId: +productId,

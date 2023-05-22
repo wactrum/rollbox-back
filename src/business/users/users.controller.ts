@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Req,
@@ -45,20 +46,20 @@ export class UsersController {
   @Get(':id')
   @Permissions(Permission.VIEW_USER)
   @ApiOkResponse({ type: UserEntity })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.usersService.findOne(+id);
   }
 
   @Patch(':id')
   @Permissions(Permission.USER_UPDATE)
   @ApiOkResponse({ type: UserEntity })
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id', ParseIntPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
   @Permissions(Permission.USER_DELETE)
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     this.usersService.remove(+id);
   }
 
@@ -68,7 +69,7 @@ export class UsersController {
   @Patch('/:id/set-roles')
   @Permissions(Permission.EDIT_USER_ROLES)
   @ApiCreatedResponse({ type: UserEntity })
-  async setRoles(@Param('id') id: string, @Body() attachRoleDto: AttachRoleDto) {
+  async setRoles(@Param('id', ParseIntPipe) id: string, @Body() attachRoleDto: AttachRoleDto) {
     return this.usersService.setRoles(+id, attachRoleDto);
   }
 
