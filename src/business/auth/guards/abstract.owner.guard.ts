@@ -39,10 +39,15 @@ export abstract class IsOwnerGuard extends RbacGuard {
     const { user, paramId } = this.getContext(context);
     const userPermissions = await this.getUserPermissions(user.id);
 
-    const isOwner = await this.checkIsOwner(user.id, paramId);
     const hasPermissions = requiredPermissions.some((permission) =>
       userPermissions.includes(permission)
     );
+
+    if (hasPermissions) {
+      return true;
+    }
+
+    const isOwner = await this.checkIsOwner(+user.id, +paramId);
 
     if (!requiredPermissions) {
       return isOwner;

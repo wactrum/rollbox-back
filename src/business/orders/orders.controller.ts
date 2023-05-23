@@ -3,19 +3,20 @@ import {
   Controller,
   Delete,
   Get,
-  Param, ParseIntPipe,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
   Request,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderRequestDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { GetOrdersDto, GetUserOrdersDto } from '@/business/orders/dto/get-orders.dto';
 import { ApiPaginatedResponse } from '@/infrastructure/database/prisma/decorators/pagination.decorator';
-import { OrderEntity } from '@/business/orders/entities/order.entity';
+import { OrderEntity, RetriveOrderEntity } from '@/business/orders/entities/order.entity';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/business/auth/guards/jwt-auth.guard';
 import { Permissions } from '@/business/auth/decorators/rbac.decorator';
@@ -52,26 +53,26 @@ export class OrdersController {
   @Get(':id')
   @Permissions(Permission.VIEW_ORDER)
   @UseGuards(OrderOwnerGuard)
-  @ApiOkResponse({ type: OrderEntity })
-  findOne(@Param('id', ParseIntPipe) id: string) {
-    return this.ordersService.findOne(+id);
+  @ApiOkResponse({ type: RetriveOrderEntity })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.ordersService.findOne(id);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: OrderEntity })
-  update(@Param('id', ParseIntPipe) id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateOrderDto: UpdateOrderDto) {
+    return this.ordersService.update(id, updateOrderDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.ordersService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.ordersService.remove(id);
   }
 
   @Post('/cancel')
   @UseGuards(OrderOwnerGuard)
   @Permissions(Permission.UPDATE_ORDER)
-  cancel(@Param('id', ParseIntPipe) id: string, @Body() cancelOrderDto: CancelOrderDto) {
-    return this.ordersService.cancel(+id, cancelOrderDto);
+  cancel(@Param('id', ParseIntPipe) id: number, @Body() cancelOrderDto: CancelOrderDto) {
+    return this.ordersService.cancel(id, cancelOrderDto);
   }
 }

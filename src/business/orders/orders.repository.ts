@@ -4,7 +4,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { PrismaPaginationService } from '@/infrastructure/database/prisma/prisma.pagination.service';
 import { Order, Prisma } from '@prisma/client';
-import { GetOrdersDto, GetUserOrdersDto } from "@/business/orders/dto/get-orders.dto";
+import { GetOrdersDto, GetUserOrdersDto } from '@/business/orders/dto/get-orders.dto';
 import { CancelOrderDto } from '@/business/orders/dto/cancel-order.dto';
 
 @Injectable()
@@ -98,7 +98,25 @@ export class OrdersRepository {
   findOne(id: number) {
     return this.prismaService.order.findFirst({
       where: { id, isDeleted: false },
-      include: { orderCancellations: true },
+      include: {
+        orderCancellations: true,
+        user: {
+          select: {
+            phone: true,
+            name: true,
+          },
+        },
+        deliveryLocation: true,
+        products: {
+          include: {
+            product: {
+              include: {
+                productImage: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 

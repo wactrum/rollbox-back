@@ -9,6 +9,7 @@ import {
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { DeliveryLocationEntity } from '@/business/delivery-locations/entities/delivery-location.entity';
 import { ProductEntity } from '@/business/products/entities/product.entity';
+import { UserEntity } from '@/business/users/entities/user.entity';
 
 export class ProductsOnOrdersEntity implements ProductsOnOrders {
   id: number;
@@ -54,4 +55,9 @@ export class OrderEntity implements Order {
 
   @ApiHideProperty()
   isDeleted: boolean | null;
+}
+
+export class RetriveOrderEntity extends OrderEntity {
+  @ApiProperty({ type: UserEntity })
+  user: UserEntity;
 }
