@@ -53,6 +53,6 @@ export abstract class IsOwnerGuard extends RbacGuard {
       return isOwner;
     }
 
-    return isOwner || hasPermissions;
+    return isOwner;
   }
 }

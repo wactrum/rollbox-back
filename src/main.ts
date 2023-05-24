@@ -58,7 +58,7 @@ async function bootstrap() {
 
   adapter.register(fstatic, {
     root: staticPath,
-    prefix: '/uploads/', // optional: default '/'
+    prefix: '/uploads/',
   });
 
   adapter.register(multipart);

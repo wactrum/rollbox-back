@@ -98,8 +98,8 @@ model Product {
   description      String
   price            Float
   discount         Float?
-  category         Category           @relation(fields: [categoryId], references: [id])
-  categoryId       Int
+  category         Category?          @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId       Int?
   productsOnCart   ProductsOnCart[]
   productsOnOrders ProductsOnOrders[]
   isDeleted        Boolean?           @default(false)

@@ -1,10 +1,11 @@
-import { PrismaClient } from "@prisma/client";
-import { Permission } from "@/business/auth/permission.service";
+import { PrismaClient } from '@prisma/client';
+import { Permission } from '@/business/auth/permission.service';
 
 const baseRoles = [
   {
-    name: "Admin", permissions: Object.values(Permission)
-  }
+    name: 'Admin',
+    permissions: Object.values(Permission),
+  },
 ];
 
 export async function seedRoles(prisma: PrismaClient) {
@@ -13,27 +14,29 @@ export async function seedRoles(prisma: PrismaClient) {
       where: { name: role.name },
       update: {
         permissions: {
-          connectOrCreate: role.permissions.map(el => ({
+          connectOrCreate: role.permissions.map((el) => ({
             where: {
-              name: el
+              name: el,
             },
             create: {
-              name: el
-            }
-          }))
-        }
+              name: el,
+            },
+          })),
+        },
       },
-      create: { name: role.name,
+      create: {
+        name: role.name,
         permissions: {
-          connectOrCreate: role.permissions.map(el => ({
+          connectOrCreate: role.permissions.map((el) => ({
             where: {
-              name: el
+              name: el,
             },
             create: {
-              name: el
-            }
-          }))
-        }}
+              name: el,
+            },
+          })),
+        },
+      },
     });
   }
   console.log(`✅ Seed ROLES inserted`);

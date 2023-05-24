@@ -123,7 +123,7 @@ export class OrdersRepository {
   update(id: number, updateOrderDto: UpdateOrderDto) {
     return this.prismaService.order.update({
       where: { id },
-      data: updateOrderDto,
+      data: { ...updateOrderDto, updatedAt: new Date() },
     });
   }
 

@@ -31,4 +31,6 @@ export enum Permission {
   VIEW_ORDER = 'orders.view',
   UPDATE_ORDER = 'orders.update',
   DELETE_ORDER = 'orders.delete',
+
+  VIEW_ADMIN_PAGE = 'view.admin.page',
 }

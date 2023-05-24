@@ -47,7 +47,7 @@ export class OrderEntity implements Order {
   @ApiProperty({ type: DeliveryLocationEntity })
   deliveryLocation: DeliveryLocationEntity;
 
-  @ApiProperty({ type: ProductsOnOrdersEntity })
+  @ApiProperty({ type: ProductsOnOrdersEntity, isArray: true })
   products: ProductsOnOrdersEntity;
 
   @ApiProperty({ type: ProductsOnOrdersEntity, nullable: true })

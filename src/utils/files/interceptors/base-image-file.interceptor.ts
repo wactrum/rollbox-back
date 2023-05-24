@@ -1,6 +1,9 @@
-import { FileInterceptor, MulterOptions } from '@nest-lab/fastify-multer';
-import { diskStorage, MulterError } from 'fastify-multer';
-import { extname } from 'path';
+import { FileInterceptor, MulterOptions, StorageEngine } from '@nest-lab/fastify-multer';
+import { MulterError } from 'fastify-multer';
+import * as sharp from 'sharp';
+import { createWriteStream } from 'fs';
+import { promisify } from 'util';
+import { unlink } from 'fs';
 
 export function createBaseImageFileInterceptor(
   folder: string,
@@ -17,18 +20,35 @@ function createFileInterceptorOptions(options?: Partial<MulterOptions>): MulterO
         cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
       }
     },
-    storage: diskStorage({
-      destination: './uploads/products',
-      filename: (req, file, callback) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = extname(file.originalname);
-        const filename = `${uniqueSuffix}${ext}`;
-        callback(null, filename);
-      },
-    }),
+    storage: baseStorage('./uploads/products'),
     limits: {
       fileSize: 1024 * 1024, // 1MB
     },
     ...options,
+  };
+}
+
+function baseStorage(destination: string): StorageEngine {
+  return {
+    _handleFile(req, file, callback) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const filename = `${uniqueSuffix}.webp`;
+      const destPath = `${destination}/${filename}`;
+
+      file.stream
+        .pipe(sharp().webp({ quality: 80 }))
+        .pipe(createWriteStream(destPath))
+        .on('finish', () => callback(null, { path: destPath, filename }))
+        .on('error', callback);
+    },
+    async _removeFile(req, file, callback) {
+      const unlinkAsync = promisify(unlink);
+      try {
+        await unlinkAsync(file.path);
+        callback(null);
+      } catch (err) {
+        callback(err);
+      }
+    },
   };
 }
