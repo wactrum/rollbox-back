@@ -20,7 +20,7 @@ function createFileInterceptorOptions(options?: Partial<MulterOptions>): MulterO
         cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
       }
     },
-    storage: baseStorage('./uploads/products'),
+    storage: baseStorage('/uploads/products'),
     limits: {
       fileSize: 1024 * 1024, // 1MB
     },

@@ -36,7 +36,7 @@ export class GreensmsService extends SmsProvider implements OnModuleInit {
       this.client.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
       this.logger.debug('Success auth for provider');
     } catch (e) {
-      console.warn(e);
+      this.logger.error('Failed auth for greensms provider');
     }
   }
 

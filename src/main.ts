@@ -3,15 +3,12 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
 import { PrismaExceptionFilter } from '@/infrastructure/database/prisma/errors/prisma-exception.filter';
 import multipart from '@fastify/multipart';
 import fstatic from '@fastify/static';
 import * as path from 'path';
 import exceptionFactory from '@/utils/errors/exceptionFactory';
 import { ConfigService } from '@nestjs/config';
-
-declare const module: any;
 
 /**
  * Prepare server
@@ -29,8 +26,6 @@ export async function prepareServer(app: INestApplication): Promise<INestApplica
   );
 
   // Use Prisma and handle prisma errors
-  const prismaService: PrismaService = app.get(PrismaService);
-  await prismaService.enableShutdownHooks(app);
   const adapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaExceptionFilter(adapterHost));
 
@@ -40,7 +35,8 @@ export async function prepareServer(app: INestApplication): Promise<INestApplica
 function enableSwagger(app: INestApplication): INestApplication {
   // Use Swagger docs
   const config = new DocumentBuilder()
-    .setTitle('Nest-template API')
+    .setTitle('Rollbox')
+    .setDescription('The Rollbox API documentation')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -54,7 +50,7 @@ function enableSwagger(app: INestApplication): INestApplication {
 async function bootstrap() {
   const adapter = new FastifyAdapter();
 
-  const staticPath = path.join(__dirname, '..', 'uploads');
+  const staticPath = path.join(__dirname, '../../', 'uploads');
 
   adapter.register(fstatic, {
     root: staticPath,
@@ -72,11 +68,6 @@ async function bootstrap() {
     methods: '*',
     allowedHeaders: '*',
   });
-
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
-  }
 
   enableSwagger(app);
 
